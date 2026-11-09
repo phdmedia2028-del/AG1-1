@@ -1,0 +1,33 @@
+name: Giai nen ma nguon AG1
+on:
+  push:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tach file tong hop thanh tung file
+        run: |
+          if [ ! -f ag1-ma-nguon-tong-hop.txt ]; then echo "Khong co file tong hop, bo qua"; exit 0; fi
+          cat > /tmp/unpack.py <<'PY'
+          import re, os
+          t = open('ag1-ma-nguon-tong-hop.txt', encoding='utf-8').read()
+          pat = re.compile(r'\n===== FILE: (.+?) =====\n(.*?)\n===== HẾT FILE: \1 =====\n', re.S)
+          n = 0
+          for m in pat.finditer(t):
+              p, c = m.group(1), m.group(2)
+              os.makedirs(os.path.dirname(p) or '.', exist_ok=True)
+              open(p, 'w', encoding='utf-8').write(c)
+              n += 1
+          print('Da tao', n, 'file')
+          PY
+          python3 /tmp/unpack.py
+          git rm -q --ignore-unmatch ag1-ma-nguon-tong-hop.txt ag1
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add -A
+          git commit -m "Tach ma nguon AG1 thanh tung file" || echo "Khong co gi thay doi"
+          git push
