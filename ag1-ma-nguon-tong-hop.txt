@@ -1,0 +1,4191 @@
+DỰ ÁN AG1 LANDING (React 19 + Vite 6 + Tailwind 4)
+Hãy tạo lại ĐÚNG từng file dưới đây với ĐÚNG đường dẫn và ĐÚNG nội dung, không sửa, không viết lại.
+Ảnh và video tải từ https://clinquant-vacherin-a00544.netlify.app nên không cần file media.
+
+=== CẤU TRÚC THƯ MỤC ===
+.env.example
+.gitignore
+DOC-TRUOC.md
+README.md
+firebase-applet-config.json
+firebase-blueprint.json
+firestore.rules
+index.html
+metadata.json
+package.json
+src/App.tsx
+src/components/About.tsx
+src/components/AdminPage.tsx
+src/components/CoachingSection.tsx
+src/components/Community.tsx
+src/components/FAQ.tsx
+src/components/Fears.tsx
+src/components/FinalCTA.tsx
+src/components/Footer.tsx
+src/components/Header.tsx
+src/components/Hero.tsx
+src/components/MobileStickyCTA.tsx
+src/components/PaymentModal.tsx
+src/components/Roadmap.tsx
+src/components/Testimonials.tsx
+src/components/VideoTestimonials.tsx
+src/components/WaitlistModal.tsx
+src/components/ZaloWidget.tsx
+src/data.ts
+src/firebase.ts
+src/index.css
+src/main.tsx
+src/types.ts
+src/waitlistSheet.ts
+src/waitlistTypes.ts
+tsconfig.json
+vite.config.ts
+
+
+===== FILE: .env.example =====
+# GEMINI_API_KEY: Required for Gemini AI API calls.
+# AI Studio automatically injects this at runtime from user secrets.
+# Users configure this via the Secrets panel in the AI Studio UI.
+GEMINI_API_KEY="MY_GEMINI_API_KEY"
+
+# APP_URL: The URL where this applet is hosted.
+# AI Studio automatically injects this at runtime with the Cloud Run service URL.
+# Used for self-referential links, OAuth callbacks, and API endpoints.
+APP_URL="MY_APP_URL"
+
+===== HẾT FILE: .env.example =====
+
+===== FILE: .gitignore =====
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+.env*
+!.env.example
+
+===== HẾT FILE: .gitignore =====
+
+===== FILE: DOC-TRUOC.md =====
+# AG1 Landing · bản chỉ có mã nguồn (không kèm video, ảnh)
+
+- Toàn bộ ảnh và video được tải từ landing hiện tại: https://clinquant-vacherin-a00544.netlify.app
+  (logo, ảnh founder, ảnh nền, 13 video thành viên, 3 video buổi call, 3 ảnh Discord).
+- File media gốc nằm riêng trong gói ag1-video-va-anh.zip. Muốn tự chứa media: tạo thư mục public/ ở gốc dự án,
+  chép nội dung gói đó vào, rồi xóa tiền tố https://clinquant-vacherin-a00544.netlify.app trong các file src/components/*.tsx.
+- Dự án: React 19 + Vite 6 + Tailwind 4. Lệnh: npm install, npm run dev, npm run build.
+- Ghi chú cho AI trong AI Studio: giữ nguyên toàn bộ nội dung, không viết lại, không tạo app mới.
+
+===== HẾT FILE: DOC-TRUOC.md =====
+
+===== FILE: README.md =====
+<div align="center">
+<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
+</div>
+
+# Run and deploy your AI Studio app
+
+This contains everything you need to run your app locally.
+
+View your app in AI Studio: https://ai.studio/apps/0738d7cd-0ae3-4e83-bbff-99eb82dae5cf
+
+## Run Locally
+
+**Prerequisites:**  Node.js
+
+
+1. Install dependencies:
+   `npm install`
+2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
+3. Run the app:
+   `npm run dev`
+
+===== HẾT FILE: README.md =====
+
+===== FILE: firebase-applet-config.json =====
+{
+  "projectId": "neat-catalyst-7dzmz",
+  "appId": "1:952129717365:web:187420ba6200f065a3a43c",
+  "apiKey": "AIzaSyCz_Al6egp_dmfCNAC2uQTnUoquwk5-rjQ",
+  "authDomain": "neat-catalyst-7dzmz.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-hieutrancoaching-0738d7cd-0ae3-4e83-bbff-99eb82dae5cf",
+  "storageBucket": "neat-catalyst-7dzmz.firebasestorage.app",
+  "messagingSenderId": "952129717365",
+  "measurementId": "",
+  "oAuthClientId": "952129717365-anvvc0929f8lkjkdg4bk0c863ahj64k1.apps.googleusercontent.com",
+  "recaptchaSiteKey": ""
+}
+===== HẾT FILE: firebase-applet-config.json =====
+
+===== FILE: firebase-blueprint.json =====
+{
+  "entities": {
+    "WaitlistEntry": {
+      "title": "WaitlistEntry",
+      "description": "A user registration in the 1:1 coaching waitlist.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the applicant"
+        },
+        "zalo": {
+          "type": "string",
+          "description": "Normalized Zalo phone number (digits only)"
+        },
+        "hoursPerDay": {
+          "type": "string",
+          "description": "Hours per day available to invest"
+        },
+        "journey": {
+          "type": "string",
+          "description": "Applicant's journey with affiliate or AI"
+        },
+        "whyBestFit": {
+          "type": "string",
+          "description": "Why the applicant is the best fit for coaching"
+        },
+        "budget": {
+          "type": "string",
+          "description": "Investment budget range"
+        },
+        "startMonth": {
+          "type": "string",
+          "description": "Target start month (YYYY-MM)"
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Creation timestamp in milliseconds"
+        }
+      },
+      "required": [
+        "name",
+        "zalo",
+        "hoursPerDay",
+        "journey",
+        "whyBestFit",
+        "budget",
+        "startMonth",
+        "createdAt"
+      ]
+    },
+    "CoachingSettings": {
+      "title": "CoachingSettings",
+      "description": "Slot counter configuration for 1:1 coaching.",
+      "type": "object",
+      "properties": {
+        "slotsFilled": {
+          "type": "number",
+          "description": "Number of coaching slots currently filled"
+        },
+        "slotsTotal": {
+          "type": "number",
+          "description": "Total number of coaching slots available"
+        }
+      },
+      "required": ["slotsFilled", "slotsTotal"]
+    },
+    "AdminEntry": {
+      "title": "AdminEntry",
+      "description": "Allowlisted admin user document keyed by email.",
+      "type": "object",
+      "properties": {
+        "role": {
+          "type": "string",
+          "description": "Optional role label"
+        }
+      }
+    }
+  },
+  "firestore": {
+    "/waitlist/{docId}": {
+      "schema": { "$ref": "#/entities/WaitlistEntry" },
+      "description": "Public coaching waitlist entries"
+    },
+    "/settings/{docId}": {
+      "schema": { "$ref": "#/entities/CoachingSettings" },
+      "description": "Coaching slot settings"
+    },
+    "/admins/{email}": {
+      "schema": { "$ref": "#/entities/AdminEntry" },
+      "description": "Admin allowlist keyed by email"
+    }
+  }
+}
+
+===== HẾT FILE: firebase-blueprint.json =====
+
+===== FILE: firestore.rules =====
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isRootAdmin() {
+      return request.auth != null
+        && (request.auth.token.email == 'ntunga.26@gmail.com'
+            || request.auth.token.email == 'tunganhhh.nl@gmail.com');
+    }
+
+    function isAdmin() {
+      return request.auth != null && (
+        isRootAdmin()
+        || exists(/databases/$(database)/documents/admins/$(request.auth.token.email))
+      );
+    }
+
+    // Public waitlist: anyone can read and submit; only admins can modify or delete
+    match /waitlist/{docId} {
+      allow read: if true;
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+
+    // Slot counter: public read, admin write
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Admin allowlist: only the root admin manages it
+    match /admins/{email} {
+      allow read: if isAdmin();
+      allow create, update, delete: if isRootAdmin();
+    }
+  }
+}
+
+===== HẾT FILE: firestore.rules =====
+
+===== FILE: index.html =====
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AG1 · Học AI Affiliate cùng Hiếu Trần</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
+
+===== HẾT FILE: index.html =====
+
+===== FILE: metadata.json =====
+{
+  "name": "AG1 Landing",
+  "description": "Landing page AG1 (1% Affiliate Global) · Hiếu Trần Coaching",
+  "requestFramePermissions": []
+}
+
+===== HẾT FILE: metadata.json =====
+
+===== FILE: package.json =====
+{
+  "name": "ag1-landing",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "firebase": "^12.4.0",
+    "lucide-react": "^0.546.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tailwindcss": "^4.1.14",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3"
+  }
+}
+
+===== HẾT FILE: package.json =====
+
+===== FILE: src/App.tsx =====
+import React from "react";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import About from "./components/About";
+import Community from "./components/Community";
+import VideoTestimonials from "./components/VideoTestimonials";
+import Fears from "./components/Fears";
+import Roadmap from "./components/Roadmap";
+import Testimonials from "./components/Testimonials";
+import FAQ from "./components/FAQ";
+import FinalCTA from "./components/FinalCTA";
+import Footer from "./components/Footer";
+import ZaloWidget from "./components/ZaloWidget";
+import CoachingSection from "./components/CoachingSection";
+import AdminPage from "./components/AdminPage";
+import { PaymentModalProvider } from "./components/PaymentModal";
+import MobileStickyCTA from "./components/MobileStickyCTA";
+
+export default function App() {
+  const ADMIN_PATH = "/adminhieutrancoaching123456";
+  if (typeof window !== "undefined" && window.location.pathname.replace(/\/$/, "") === ADMIN_PATH) {
+    return <AdminPage />;
+  }
+
+  return (
+    <PaymentModalProvider>
+      <div className="relative min-h-screen bg-[#FAF9F6] flex flex-col selection:bg-[#C9A961]/25 selection:text-[#14130F]">
+        {/* Premium Notification Alert Bar above Header */}
+        <div className="bg-[#14130F] text-[#FAF9F6] border-b border-[#C9A961]/25 text-center py-2 sm:py-2.5 px-4 text-[11px] sm:text-xs font-semibold tracking-wide flex items-center justify-center gap-2 flex-wrap sm:flex-nowrap">
+          <span className="inline-flex items-center shrink-0 bg-[#C9A961] text-[#14130F] text-[10px] uppercase font-black px-2 py-0.5 rounded tracking-wide leading-none">Mới</span>
+          <span>4.000+ thành viên cộng đồng · 1.200+ thành viên thực chiến · 600.000 USD GMV cộng đồng tạo ra trong Q3/2026</span>
+        </div>
+
+        <Header />
+
+        <main className="flex-grow">
+          <Hero />
+          <About />
+          <Community />
+          <VideoTestimonials />
+          {/* <Fears /> */}
+          {/* <Roadmap /> */}
+          <CoachingSection />
+          <Testimonials />
+          <FAQ />
+          <FinalCTA />
+        </main>
+
+        <Footer />
+        <div className="h-20 md:hidden bg-[#14130F]" aria-hidden="true" />
+        <ZaloWidget />
+        <MobileStickyCTA />
+      </div>
+    </PaymentModalProvider>
+  );
+}
+
+===== HẾT FILE: src/App.tsx =====
+
+===== FILE: src/components/About.tsx =====
+import React from "react";
+import { Award, ShieldCheck, Users, TrendingUp, Globe } from "lucide-react";
+
+const CREDENTIALS = [
+  { icon: Award, text: "TikTok Multi-Channel Network Official Partner" },
+  { icon: Globe, text: "Đối tác trực tiếp của nhiều cộng đồng AI Affiliate quốc tế" },
+  { icon: ShieldCheck, text: "Brand Agency của 10+ brand, gồm 1 brand supplement top 1 thị trường US" },
+];
+
+const TRACK_RECORD = [
+  { number: "4.000+", label: "Thành viên cộng đồng AG1" },
+  { number: "1.200+", label: "Thành viên thực chiến AG1" },
+  { number: "10+", label: "Brand tại Mỹ đang hợp tác cùng AG1" },
+];
+
+export default function About() {
+  return (
+    <section className="py-14 md:py-24 bg-[#FAF9F6] overflow-hidden border-t border-black/[0.05]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+
+          {/* Left Column: Photo card */}
+          <div className="lg:col-span-5 relative order-first lg:sticky lg:top-28">
+            <div className="absolute -inset-1.5 bg-gradient-to-tr from-[#C9A961] to-[#FAF9F6] rounded-3xl blur opacity-30 pointer-events-none" />
+
+            <div className="relative bg-[#14130F] border border-[#C9A961]/25 p-6 md:p-8 rounded-3xl shadow-xl space-y-6">
+              <div className="aspect-[4/5] sm:aspect-[3/4] rounded-2xl overflow-hidden relative shadow-md border border-[#C9A961]/20">
+                <img
+                  src="https://clinquant-vacherin-a00544.netlify.app/founder.webp"
+                  alt="Hiếu Trần, Founder AG1"
+                  className="w-full h-full object-cover object-top"
+                  referrerPolicy="no-referrer"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#14130F] via-transparent to-transparent opacity-90" />
+
+                <div className="absolute bottom-5 left-5 right-5 text-white space-y-1">
+                  <span className="text-[9px] bg-[#C9A961] text-[#14130F] px-2.5 py-1 rounded font-extrabold tracking-widest uppercase font-mono">NGƯỜI SÁNG LẬP</span>
+                  <p className="font-display font-extrabold text-xl">Hiếu Trần</p>
+                  <p className="text-xs text-slate-300 font-light">Founder AG1 · Nhà đào tạo &amp; Brand Agency Partner</p>
+                </div>
+              </div>
+
+              {/* Credentials */}
+              <div className="space-y-3">
+                {CREDENTIALS.map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={idx} className="flex items-start space-x-3 bg-white/5 p-3.5 rounded-xl border border-[#C9A961]/15">
+                      <Icon className="w-5 h-5 text-[#C9A961] shrink-0 mt-0.5" />
+                      <span className="text-xs font-semibold text-slate-200 leading-snug">{item.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column: Narrative */}
+          <div className="lg:col-span-7 space-y-7">
+            <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+              Người Sáng Lập
+            </span>
+
+            <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
+              Hiếu Xây Dựng AG1 Để Người Việt Tự Tin Bán Hàng Thị Trường Global.
+            </h2>
+
+            <div className="space-y-5 text-slate-600 leading-relaxed font-light text-sm sm:text-base">
+
+              {/* Trần Hiếu là ai */}
+              <div className="space-y-2">
+                <h3 className="font-display font-bold text-slate-900 text-base">Trần Hiếu là ai?</h3>
+                <p>
+                  Mình là Hiếu, một cậu trai du học sinh Úc đến từ Hà Tĩnh, Việt Nam. Tính đến thời điểm hiện tại mình vừa bước qua tuổi 21. Một thằng nhóc lầm lì và tràn đầy tham vọng kiếm tiền!
+                </p>
+                <p>
+                  Vào cuối năm 2025, mình là thành viên đầu tiên ở kỳ quý 4/2025 trong một cộng đồng Affiliate tại Mỹ cán được mốc doanh số <strong className="font-semibold text-slate-800">55.000$ chỉ với 1 video duy nhất</strong> được làm bằng AI thuần túy.
+                </p>
+                <p>
+                  Đây là một cộng đồng có mức phí tham gia là 23.000$ (tương ứng 600 triệu VND), gia hạn 3 tháng một lần... Đắt xắt ra miếng luôn! Và cảm hứng của mình được nối tiếp từ đây.
+                </p>
+                <p>
+                  Một dấu hỏi lớn bổ thẳng vào đầu mình: tại sao mình lại không triển khai mô hình cộng đồng đó ở Việt Nam, đất nước của mình, để chúng ta cũng có thể kiếm được tiền như các bạn bên Mỹ? Cảm hứng này khiến đầu mình tràn ngập khát vọng và gần như muốn nổ tung tại thời điểm đó. Thế là mình đã có một quyết định...
+                </p>
+              </div>
+
+              {/* Mình muốn tạo ra điều gì (khối nổi bật màu vàng) */}
+              <div className="space-y-2 bg-[#C9A961]/15 border-l-4 border-[#C9A961] rounded-r-2xl p-4 sm:p-5 text-slate-700">
+                <h3 className="font-display font-bold text-slate-900 text-base">Mình muốn tạo ra điều gì?</h3>
+                <p>
+                  Mình ấp ủ xây dựng một cộng đồng về chủ đề AI Affiliate US. Cái tên thì như bao cộng đồng về Affiliate khác mà các bạn chắc hẳn cũng từng nghe qua ở Việt Nam... Nhạt!
+                </p>
+                <p>
+                  Nhưng mình thấy rõ tiềm năng của cộng đồng mình xây dựng. Sau những lần mất tài khoản, sau những lần vỡ mộng đốt tiền, sau những đêm thức trắng viết những content AI khô khan không có lấy một điểm chạm chuyển đổi. Sau những lần tự trách bản thân, một thằng du học sinh rỗng túi cứ thấy cái gì kiếm được tiền là lại lao vào. Thì cộng đồng mình tạo ra phải đi trên con đường kết tinh từ những sự đổ vỡ ấy, những nghịch cảnh dở khóc dở cười ấy.
+                </p>
+                <p>
+                  Cộng đồng này phải là sự ngưng tụ của những giá trị cốt lõi thực dụng nhất, để có được nhiều content triệu view, nhiều case vạn đơn, và những sự kết nối thành công nối tiếp kín mít. Cộng đồng phải là <strong className="font-semibold text-slate-800">1% trong thị trường AI Affiliate Việt Nam</strong>! Cho đến ngày hôm nay, ngày mà các bạn đọc được những dòng này... AG1 ra đời!
+                </p>
+              </div>
+
+              {/* Tôi đã có những gì */}
+              <div className="space-y-3">
+                <h3 className="font-display font-bold text-slate-900 text-base">Mình đã tạo ra được gì?</h3>
+                <p>
+                  Mình từng là thành viên của một cộng đồng nước ngoài hoạt động rất mạnh, nhưng chi phí quá lớn, điều mà không phải người Việt nào cũng có đủ tài chính để tham gia. Vì vậy, mình xây dựng AG1 thành một cộng đồng chuyên nghiệp, lớn mạnh nhưng thật dễ tiếp cận.
+                </p>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  {TRACK_RECORD.map((item, idx) => (
+                    <div key={idx} className="bg-white rounded-2xl border border-black/5 p-3 sm:p-4 shadow-sm">
+                      <div className="font-display font-extrabold text-lg sm:text-xl text-[#C9A961]">{item.number}</div>
+                      <div className="text-[11px] sm:text-xs text-slate-500 mt-1 leading-snug">{item.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Hiếu giúp mọi người như thế nào */}
+              <div className="space-y-2">
+                <h3 className="font-display font-bold text-slate-900 text-base">Hiếu giúp mọi người như thế nào?</h3>
+                <p>
+                  Mình có những kiến thức đúc kết sau những lần thất bại trong quá khứ, từ đó phát triển thành những bài học sâu sắc: từ cách viết nội dung sao cho viral đến nắm vững cách dùng tool dựng video. Khi bạn đã thành thạo, mình còn có thể là <strong className="font-semibold text-slate-800">cầu nối giữa các Brand lớn tại Mỹ</strong> và chúng ta, những Creator chuyên nghiệp.
+                </p>
+              </div>
+            </div>
+
+            {/* Promise highlight */}
+            <div className="bg-[#14130F] border border-[#C9A961]/30 rounded-3xl p-7 sm:p-8 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-48 h-48 bg-[#C9A961] opacity-[0.07] blur-[80px] pointer-events-none" />
+              <div className="relative z-10 space-y-3">
+                <span className="text-[10px] font-bold tracking-widest text-[#C9A961] uppercase">Lời hứa của Hiếu</span>
+                <p className="font-display font-extrabold text-xl sm:text-2xl text-[#F5F4F0] leading-snug">
+                  "Biến năng lực và thời gian của người Việt thành giá trị thật trên thị trường Global."
+                </p>
+                <p className="text-slate-400 text-sm font-light leading-relaxed">
+                  Đó là lý do mình xây dựng cộng đồng AG1, và là việc Hiếu cùng đội ngũ vận hành cộng đồng đang làm mỗi ngày cùng từng thành viên.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/About.tsx =====
+
+===== FILE: src/components/AdminPage.tsx =====
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  collection, getDocs, deleteDoc, doc, getDoc, setDoc, orderBy, query,
+} from "firebase/firestore";
+import {
+  GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, User,
+} from "firebase/auth";
+import { db, auth } from "../firebase";
+import { WaitlistEntry, CoachingSettings, formatStartMonth } from "../waitlistTypes";
+import { Trash2, Download, LogOut, Loader2, ShieldAlert, Save } from "lucide-react";
+
+const ROOT_ADMIN_EMAIL = "ntunga.26@gmail.com";
+const SECONDARY_ROOT_EMAIL = "tunganhhh.nl@gmail.com";
+
+export default function AdminPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [entries, setEntries] = useState<WaitlistEntry[]>([]);
+  const [settings, setSettings] = useState<CoachingSettings>({ slotsFilled: 8, slotsTotal: 8 });
+  const [loading, setLoading] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (u) => {
+      setUser(u);
+      if (u?.email) {
+        if (u.email === ROOT_ADMIN_EMAIL || u.email === SECONDARY_ROOT_EMAIL) {
+          setIsAdmin(true);
+        } else {
+          try {
+            const adminDoc = await getDoc(doc(db, "admins", u.email));
+            setIsAdmin(adminDoc.exists());
+          } catch { setIsAdmin(false); }
+        }
+      } else {
+        setIsAdmin(false);
+      }
+      setAuthReady(true);
+    });
+    return () => unsub();
+  }, []);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const q = query(collection(db, "waitlist"), orderBy("createdAt", "asc"));
+      const snap = await getDocs(q);
+      setEntries(snap.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<WaitlistEntry, "id">) })));
+      const sDoc = await getDoc(doc(db, "settings", "coaching"));
+      if (sDoc.exists()) {
+        setSettings(sDoc.data() as CoachingSettings);
+      } else {
+        const defaultSettings: CoachingSettings = { slotsFilled: 8, slotsTotal: 8 };
+        setSettings(defaultSettings);
+        await setDoc(doc(db, "settings", "coaching"), defaultSettings);
+      }
+    } catch { /* ignore */ }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => { if (isAdmin) loadData(); }, [isAdmin, loadData]);
+
+  const handleLogin = async () => {
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); } catch { /* ignore */ }
+  };
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!window.confirm(`Xóa bản ghi của "${name}"? Thao tác này không thể hoàn tác.`)) return;
+    try {
+      await deleteDoc(doc(db, "waitlist", id));
+      setEntries((prev) => prev.filter((e) => e.id !== id));
+    } catch { window.alert("Không xóa được. Kiểm tra lại quyền truy cập."); }
+  };
+
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      await setDoc(doc(db, "settings", "coaching"), {
+        slotsFilled: Number(settings.slotsFilled),
+        slotsTotal: Number(settings.slotsTotal),
+      });
+    } catch { window.alert("Không lưu được. Kiểm tra lại quyền truy cập."); }
+    setSavingSettings(false);
+  };
+
+  const exportCSV = () => {
+    const headers = ["STT", "Họ tên", "Zalo", "Giờ/ngày", "Hành trình", "Lý do phù hợp", "Ngân sách", "Bắt đầu từ", "Thời điểm đăng ký"];
+    const rows = entries.map((e, i) => [
+      i + 1, e.name, e.zalo, e.hoursPerDay, e.journey, e.whyBestFit, e.budget,
+      formatStartMonth(e.startMonth), new Date(e.createdAt).toLocaleString("vi-VN"),
+    ]);
+    const esc = (v: unknown) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+    const csv = "\uFEFF" + [headers, ...rows].map((r) => r.map(esc).join(",")).join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `hang-cho-coaching-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  if (!authReady) {
+    return (
+      <div className="min-h-screen bg-[#14130F] flex items-center justify-center">
+        <Loader2 className="w-7 h-7 text-[#C9A961] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-[#14130F] flex items-center justify-center p-4">
+        <div className="bg-white/5 border border-[#C9A961]/25 rounded-3xl p-9 max-w-sm w-full text-center space-y-5">
+          <h1 className="font-display font-extrabold text-xl text-[#F5F4F0]">Khu vực quản trị</h1>
+          <p className="text-sm text-slate-400">Đăng nhập bằng tài khoản Google được cấp quyền.</p>
+          <button onClick={handleLogin} className="w-full px-6 py-3.5 rounded-xl text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] text-[#14130F] transition-all cursor-pointer">
+            Đăng nhập với Google
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#14130F] flex items-center justify-center p-4">
+        <div className="bg-white/5 border border-red-500/25 rounded-3xl p-9 max-w-sm w-full text-center space-y-5">
+          <ShieldAlert className="w-10 h-10 text-red-400 mx-auto" />
+          <div className="space-y-1.5">
+            <h1 className="font-display font-extrabold text-lg text-[#F5F4F0]">Không có quyền truy cập</h1>
+            <p className="text-sm text-slate-400 break-all">{user.email}</p>
+          </div>
+          <button onClick={() => signOut(auth)} className="w-full px-6 py-3 rounded-xl text-sm font-bold bg-white/5 border border-[#C9A961]/25 text-slate-300 hover:bg-white/10 transition-all cursor-pointer">
+            Đăng xuất
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#14130F] text-[#F5F4F0] p-4 sm:p-8">
+      <div className="max-w-7xl mx-auto space-y-7">
+
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="font-display font-extrabold text-2xl">Hàng chờ Coaching</h1>
+            <p className="text-xs text-slate-500 mt-1">{user.email}</p>
+          </div>
+          <div className="flex gap-2.5">
+            <button onClick={exportCSV} className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-[#C9A961] hover:bg-[#A98B45] text-[#14130F] transition-all cursor-pointer">
+              <Download className="w-4 h-4 mr-1.5" /> Xuất CSV
+            </button>
+            <button onClick={() => signOut(auth)} className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-white/5 border border-[#C9A961]/25 text-slate-300 hover:bg-white/10 transition-all cursor-pointer">
+              <LogOut className="w-4 h-4 mr-1.5" /> Đăng xuất
+            </button>
+          </div>
+        </div>
+
+        {/* Slot settings */}
+        <div className="bg-white/5 border border-[#C9A961]/20 rounded-2xl p-5 flex flex-wrap items-end gap-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-400 block">Slot đang coaching</label>
+            <input
+              type="number" min={0} max={settings.slotsTotal}
+              value={settings.slotsFilled}
+              onChange={(e) => setSettings((s) => ({ ...s, slotsFilled: Number(e.target.value) }))}
+              className="w-24 bg-white/5 border border-[#C9A961]/25 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A961]"
+            />
+          </div>
+          <span className="text-slate-500 pb-3">/</span>
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-400 block">Tổng slot (tối đa 8)</label>
+            <input
+              type="number" min={1} max={8}
+              value={settings.slotsTotal}
+              onChange={(e) => setSettings((s) => ({ ...s, slotsTotal: Math.min(8, Number(e.target.value)) }))}
+              className="w-24 bg-white/5 border border-[#C9A961]/25 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-[#C9A961]"
+            />
+          </div>
+          <button onClick={handleSaveSettings} disabled={savingSettings} className="inline-flex items-center px-4 py-2.5 rounded-xl text-xs font-bold bg-[#C9A961] hover:bg-[#A98B45] text-[#14130F] transition-all cursor-pointer disabled:opacity-50">
+            {savingSettings ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Save className="w-4 h-4 mr-1.5" /> Lưu</>}
+          </button>
+          <div className="ml-auto text-sm text-slate-400">
+            Tổng số đăng ký: <strong className="text-[#C9A961] font-bold">{entries.length}</strong>
+          </div>
+        </div>
+
+        {/* Table */}
+        {loading ? (
+          <div className="flex justify-center py-16"><Loader2 className="w-7 h-7 text-[#C9A961] animate-spin" /></div>
+        ) : entries.length === 0 ? (
+          <p className="text-center text-slate-500 py-16 text-sm">Chưa có bản ghi nào.</p>
+        ) : (
+          <div className="space-y-2.5">
+            {entries.map((e, i) => (
+              <div key={e.id} className="bg-white/5 border border-[#C9A961]/15 rounded-2xl overflow-hidden">
+                <div className="p-4 flex flex-wrap items-center gap-4">
+                  <span className="text-xs font-mono font-bold text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/25 px-2 py-1 rounded shrink-0">#{i + 1}</span>
+                  <div className="min-w-[140px]">
+                    <p className="font-bold text-sm">{e.name}</p>
+                    <p className="text-xs text-slate-500 font-mono">{e.zalo}</p>
+                  </div>
+                  <div className="text-xs text-slate-400 min-w-[130px]">{e.hoursPerDay}</div>
+                  <div className="text-xs text-slate-400 min-w-[110px]">{e.budget}</div>
+                  <div className="text-xs text-slate-400 min-w-[110px]">{formatStartMonth(e.startMonth)}</div>
+                  <div className="text-xs text-slate-600 min-w-[130px]">{new Date(e.createdAt).toLocaleString("vi-VN")}</div>
+                  <div className="ml-auto flex gap-2">
+                    <button onClick={() => setExpandedId(expandedId === e.id ? null : e.id)} className="px-3 py-2 rounded-lg text-xs font-bold bg-white/5 border border-[#C9A961]/20 text-slate-300 hover:bg-white/10 transition-all cursor-pointer">
+                      {expandedId === e.id ? "Thu gọn" : "Chi tiết"}
+                    </button>
+                    <button onClick={() => handleDelete(e.id, e.name)} className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 hover:bg-red-500/20 transition-all cursor-pointer" aria-label="Xóa">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                {expandedId === e.id && (
+                  <div className="px-4 pb-4 pt-1 space-y-3.5 border-t border-white/5">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A961] mb-1.5">Hành trình affiliate / AI</p>
+                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{e.journey || "—"}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A961] mb-1.5">Lý do phù hợp</p>
+                      <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-line">{e.whyBestFit || "—"}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+===== HẾT FILE: src/components/AdminPage.tsx =====
+
+===== FILE: src/components/CoachingSection.tsx =====
+import React, { useState, useEffect, useCallback } from "react";
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { CoachingSettings } from "../waitlistTypes";
+import { fetchWaitlist } from "../waitlistSheet";
+import WaitlistModal from "./WaitlistModal";
+import { ArrowRight, ChevronDown } from "lucide-react";
+
+const PAGE_SIZE = 12;
+const WAITLIST_SHEET_URL = "https://docs.google.com/spreadsheets/d/1JxiGauAd-2fj7AS7TSOffJDTcKbSjkrMUlGGcNSt8UY/edit?usp=sharing";
+const REFRESH_MS = 60_000; // tự cập nhật hàng chờ mỗi phút
+
+export default function CoachingSection() {
+  const [modalOpen, setModalOpen] = useState(false);
+  const [names, setNames] = useState<string[]>([]);
+  const [loadError, setLoadError] = useState(false);
+  const [settings, setSettings] = useState<CoachingSettings>({ slotsFilled: 8, slotsTotal: 8 });
+  const [loading, setLoading] = useState(true);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Hàng chờ đọc từ Google Sheet "Danh Sách Chờ Coaching" (số đếm = số tên trong sheet)
+  const loadData = useCallback(async () => {
+    try {
+      const data = await fetchWaitlist();
+      setNames(data.names);
+      setLoadError(false);
+    } catch {
+      setLoadError(true);
+      // Giữ danh sách đang hiển thị nếu tạm thời không tải được
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    loadData();
+    const t = setInterval(loadData, REFRESH_MS);
+    getDoc(doc(db, "settings", "coaching"))
+      .then((s) => { if (s.exists()) setSettings(s.data() as CoachingSettings); })
+      .catch(() => {});
+    return () => clearInterval(t);
+  }, [loadData]);
+
+
+  return (
+    <section className="py-14 md:py-24 bg-[#14130F] border-t border-[#C9A961]/15 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-10">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            Coaching 1:1 cùng Hiếu Trần
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[#F5F4F0] tracking-tight leading-tight">
+            Dành Cho Người Muốn Đi Nhanh Hơn Lộ Trình Thông Thường
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+            Với phần lớn thành viên, lộ trình cộng đồng là đủ: tài liệu, call hằng tuần và sự hỗ trợ của mọi người. Nhưng có những bạn muốn rút ngắn thời gian, thực hành ngay và cần người đồng hành sát từng bước. Coaching 1:1 dành cho các bạn đó.
+          </p>
+        </div>
+
+        {/* What it is */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-5xl mx-auto mb-10">
+          <div className="bg-white/5 border border-[#C9A961]/15 rounded-2xl p-5 space-y-2">
+            <h3 className="font-display font-bold text-base text-[#F5F4F0]">Thực hành ngay cùng Hiếu</h3>
+            <p className="text-slate-400 text-xs leading-relaxed font-light">
+              Bắt tay vào thực hành ngay từ buổi đầu. Hiếu xem trực tiếp những gì bạn làm và chỉnh cùng bạn.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-[#C9A961]/15 rounded-2xl p-5 space-y-2">
+            <h3 className="font-display font-bold text-base text-[#F5F4F0]">Hỗ trợ 24/7</h3>
+            <p className="text-slate-400 text-xs leading-relaxed font-light">
+              Vướng ở đâu là nhắn ngay, không phải chờ đến buổi call tuần sau. Đây là khác biệt lớn nhất so với lộ trình cộng đồng.
+            </p>
+          </div>
+          <div className="bg-white/5 border border-[#C9A961]/15 rounded-2xl p-5 space-y-2">
+            <h3 className="font-display font-bold text-base text-[#F5F4F0]">Lộ trình riêng</h3>
+            <p className="text-slate-400 text-xs leading-relaxed font-light">
+              Thiết kế theo quỹ thời gian, xuất phát điểm và mục tiêu của riêng bạn. Không có giáo trình chung.
+            </p>
+          </div>
+        </div>
+
+        {/* Slot status + CTA */}
+        <div className="bg-white/5 border border-[#C9A961]/25 rounded-3xl p-7 sm:p-9 max-w-3xl mx-auto mb-12">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-10 mb-6">
+            <div className="text-center">
+              <div className="font-display font-extrabold text-3xl text-[#C9A961]">
+                {settings.slotsFilled}/{settings.slotsTotal}
+              </div>
+              <div className="text-xs text-slate-400 mt-1">Slot đang coaching</div>
+            </div>
+            <div className="hidden sm:block w-px h-12 bg-[#C9A961]/20" />
+            <div className="text-center">
+              <div className="font-display font-extrabold text-3xl text-[#C9A961]">
+                {loading ? "…" : names.length}
+              </div>
+              <div className="text-xs text-slate-400 mt-1">Người đang trong hàng chờ</div>
+            </div>
+          </div>
+
+          <div className="text-center space-y-3">
+            <p className="text-slate-400 text-sm leading-relaxed max-w-xl mx-auto">
+              Hiện tại các slot đã kín. Bạn có thể đăng ký vào hàng chờ. Khi có slot trống, Hiếu sẽ liên hệ trực tiếp qua Zalo theo thứ tự trong hàng chờ để sắp lịch.
+            </p>
+            <button
+              onClick={() => setModalOpen(true)}
+              className="inline-flex items-center justify-center px-8 py-4 rounded-[10px] text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] active:scale-95 text-[#14130F] transition-all duration-200 shadow-lg shadow-[#C9A961]/20 cursor-pointer uppercase tracking-wider"
+            >
+              Đăng ký vào hàng chờ
+              <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
+            </button>
+            <p className="text-xs text-slate-500">Đăng ký hàng chờ miễn phí. Chi phí coaching được trao đổi trực tiếp trong buổi call.</p>
+          </div>
+        </div>
+
+        {/* Waitlist: bấm để mở bảng Google Sheet nhúng trực tiếp */}
+        <div className="max-w-3xl mx-auto text-center">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] uppercase">Hàng chờ hiện tại</span>
+          <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[#F5F4F0] mt-2">
+            Xem ai đang trong hàng chờ
+          </h3>
+          <p className="text-sm text-slate-400 mt-2">
+            Danh sách cập nhật trực tiếp từ bảng đăng ký{!loading && names.length > 0 ? ` · ${names.length} người đang chờ` : ""}.
+          </p>
+
+          <button
+            type="button"
+            onClick={() => setSheetOpen((o) => !o)}
+            aria-expanded={sheetOpen}
+            className="mt-6 inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-[#C9A961]/50 bg-white/5 hover:bg-[#C9A961]/10 text-[#C9A961] text-sm font-bold transition-all cursor-pointer"
+          >
+            <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${sheetOpen ? "rotate-180" : ""}`} />
+            {sheetOpen ? "Thu gọn danh sách" : "Xem danh sách hàng chờ"}
+          </button>
+
+          <div
+            className={`grid transition-all duration-500 ease-out ${sheetOpen ? "grid-rows-[1fr] opacity-100 mt-6" : "grid-rows-[0fr] opacity-0"}`}
+          >
+            <div className="overflow-hidden">
+              {/* Bảng dựng lại theo đúng giao diện file Google Sheet, dữ liệu đọc trực tiếp từ sheet */}
+              <div className="rounded-xl overflow-hidden border border-slate-300 bg-white shadow-xl max-w-xl mx-auto text-left">
+                {loading ? (
+                  <p className="py-10 text-center text-sm text-slate-500">Đang tải danh sách…</p>
+                ) : names.length === 0 ? (
+                  <p className="py-10 px-4 text-center text-sm text-slate-500">
+                    {loadError ? "Chưa tải được danh sách hàng chờ. Vui lòng tải lại trang sau ít phút." : "Chưa có ai trong hàng chờ. Hãy là người đầu tiên."}
+                  </p>
+                ) : (
+                  <div className="max-h-[440px] overflow-y-auto">
+                    <table className="w-full border-collapse text-[15px]" style={{ fontFamily: "Arial, Helvetica, sans-serif" }}>
+                      <thead className="sticky top-0">
+                        <tr className="bg-[#76A5AF] text-[#14130F]">
+                          <th className="w-20 border border-slate-300 py-2.5 px-2 text-center font-bold">STT</th>
+                          <th className="border border-slate-300 py-2.5 px-3 text-center font-bold">Tên Thành Viên Hàng Chờ</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {names.map((name, i) => (
+                          <tr key={i} className="text-slate-900">
+                            <td className="border border-slate-200 py-1.5 px-2 text-center">{i + 1}</td>
+                            <td className="border border-slate-200 py-1.5 px-3 text-center">{name}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+              <a
+                href={WAITLIST_SHEET_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block mt-3 text-xs text-slate-500 hover:text-[#C9A961] hover:underline"
+              >
+                Mở bảng gốc trên Google Sheet
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <WaitlistModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onSubmitted={() => { loadData(); setSheetOpen(true); }}
+      />
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/CoachingSection.tsx =====
+
+===== FILE: src/components/Community.tsx =====
+import React, { useState } from "react";
+import { Target, Users, Building2, BookOpen, Phone, Trophy, Briefcase, TrendingUp, Layers, Boxes, ArrowRight } from "lucide-react";
+import { usePaymentModal } from "./PaymentModal";
+
+const GLOBAL_STATS = [
+  { number: "4.000+", label: "Thành viên cộng đồng AG1" },
+  { number: "1.200+", label: "Thành viên thực chiến AG1" },
+  { number: "600.000 USD", label: "GMV cộng đồng tạo ra trong Q3/2026" },
+];
+
+const TABS = [
+  { id: "vision", label: "Mục tiêu của AG1", icon: Target },
+  { id: "creator", label: "Nếu bạn là Creator", icon: Users },
+  { id: "brand", label: "Nếu bạn là Brand / Seller", icon: Building2 },
+];
+
+const CREATOR_TIERS = [
+  {
+    icon: BookOpen,
+    title: "Học Cách Làm Video",
+    description: "Xây dựng tư duy làm video từ những kiến thức có sẵn trong kho tài liệu và các buổi sinh hoạt cộng đồng.",
+  },
+  {
+    icon: Phone,
+    title: "Thực Chiến",
+    description: "Vận dụng những concept đã được test để trực tiếp tạo ra kết quả trên TikTok Shop.",
+  },
+  {
+    icon: Briefcase,
+    title: "Chiến Dịch Lớn",
+    description: "Khi bạn đã trở thành creator chuyên nghiệp, cộng đồng kết nối bạn với các Brand lớn tại thị trường Mỹ: kết nối sản phẩm, nhận link 1%, hưởng mức hoa hồng cao 20 đến 30%.",
+  },
+];
+
+const CREATOR_STATS = [
+  { number: "4.000+", label: "Thành viên cộng đồng AG1" },
+  { number: "500+", label: "Người đã có video AI đầu tiên" },
+  { number: "200+", label: "Creator đang làm việc với brand thật" },
+];
+
+const BRAND_BENEFITS = [
+  { icon: Users, text: "Nguồn creator đã qua đào tạo, chất lượng cao, luôn sẵn có và liên tục cập nhật" },
+  { icon: TrendingUp, text: "Chi phí thấp hơn đáng kể so với agency truyền thống" },
+  { icon: Layers, text: "Linh hoạt theo quy mô, từ 10 creator đến hơn 300 creator" },
+  { icon: Boxes, text: "Thích ứng mọi ngành hàng: sức khỏe, làm đẹp, gia dụng, thời trang, thú cưng, nội thất, thể thao…" },
+];
+
+const BRAND_STATS = [
+  { number: "400+", label: "Creator đã kết nối thành công với brand" },
+  { number: "600.000 USD", label: "GMV cộng đồng tạo ra trong Q3/2026" },
+  { number: "10+", label: "Brand đang trong hệ sinh thái" },
+];
+
+export default function Community() {
+  const [activeTab, setActiveTab] = useState("creator");
+  const { openPaymentModal } = usePaymentModal();
+
+  const handleBrandContact = () => {
+    // TODO: thay link form dành riêng cho brand vào đây
+    window.open("", "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <section className="py-14 md:py-24 bg-[#14130F] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-10">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            Về Cộng Đồng
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-[#F5F4F0] tracking-tight">
+            Creator Tung, Brand Hứng
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed">
+            Cộng đồng AG1 là nơi cọ xát tạo ra dòng tiền lớn.
+          </p>
+        </div>
+
+        {/* Persistent Global Stats */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-10 max-w-2xl mx-auto">
+          {GLOBAL_STATS.map((stat, idx) => (
+            <div key={idx} className="text-center p-3 sm:p-4 bg-white/5 rounded-2xl border border-[#C9A961]/15">
+              <div className="font-display font-extrabold text-xl sm:text-xl sm:text-2xl text-[#C9A961]">{stat.number}</div>
+              <div className="text-[10px] sm:text-xs text-slate-400 mt-1 leading-snug">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Tab Bar */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mb-8 max-w-4xl mx-auto">
+          {TABS.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl border text-xs sm:text-sm font-bold transition-all cursor-pointer ${
+                  isActive
+                    ? "bg-[#C9A961] border-[#C9A961] text-[#14130F] shadow-lg shadow-[#C9A961]/15"
+                    : "bg-white/5 border-[#C9A961]/15 text-slate-300 hover:border-[#C9A961]/40 hover:bg-white/[0.08]"
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Tab Content */}
+        <div className="bg-white/5 border border-[#C9A961]/20 rounded-3xl p-6 sm:p-10 max-w-5xl mx-auto min-h-[400px]">
+
+          {/* TAB 1: VISION */}
+          {activeTab === "vision" && (
+            <div className="space-y-8 animate-fadeIn">
+              <div className="text-center space-y-3 max-w-2xl mx-auto">
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[#F5F4F0]">
+                  10.000 người Việt bán hàng trên toàn cầu bằng Content AI.
+                </h3>
+              </div>
+
+              <div className="space-y-5 text-slate-400 text-sm sm:text-base leading-relaxed font-light max-w-3xl mx-auto text-center">
+                <p>
+                  Mình muốn đưa cộng đồng cũng như người Việt làm Affiliate mở rộng thị trường, vươn khắp năm châu, không còn chỉ cạnh tranh trên sân nhà. Nếu bạn làm tốt, AG1 sẽ là nơi tạo ra nhiều sân chơi từ những lời mời hợp tác của các Brand lớn tại Mỹ, biến năng lực và công sức của mỗi thành viên thành những thành quả xứng đáng.
+                </p>
+              </div>
+
+              <div className="border-t border-[#C9A961]/15 pt-6 text-center">
+                <p className="text-[#C9A961] font-display font-bold text-base sm:text-lg italic">
+                  "Biến năng lực và thời gian của người Việt thành giá trị thật trên thị trường Global."
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: CREATOR */}
+          {activeTab === "creator" && (
+            <div className="space-y-8 animate-fadeIn">
+              <div className="text-center space-y-3 max-w-2xl mx-auto">
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[#F5F4F0]">
+                  4.000+ Người Việt Đang Cùng AG1 Dùng AI Bán Hàng Cho Thế Giới.
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  Cộng đồng giúp các thành viên đi từ lúc "chưa biết gì" đến khi tự làm ra video và có đơn hàng đầu tiên, bằng kho kiến thức có sẵn trong cộng đồng, các buổi sinh hoạt hằng tuần và nhiều hoạt động khác.
+                </p>
+              </div>
+
+              {/* Creator stats */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                {CREATOR_STATS.map((stat, idx) => (
+                  <div key={idx} className="text-center p-3 sm:p-4 bg-white/5 rounded-2xl border border-[#C9A961]/15">
+                    <div className="font-display font-extrabold text-xl sm:text-2xl text-[#C9A961]">{stat.number}</div>
+                    <div className="text-[11px] sm:text-xs text-slate-400 mt-1 leading-snug">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* 3 Tiers */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {CREATOR_TIERS.map((tier, idx) => {
+                  const Icon = tier.icon;
+                  return (
+                    <div key={idx} className="bg-white/5 border border-[#C9A961]/15 rounded-2xl p-5 space-y-3 hover:border-[#C9A961]/40 transition-all duration-300">
+                      <div className="w-11 h-11 rounded-xl bg-[#C9A961]/10 flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-[#C9A961]" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-bold tracking-widest text-[#C9A961] uppercase mb-1.5">Tầng {idx + 1}</div>
+                        <h4 className="font-display font-extrabold text-base text-[#F5F4F0] mb-1.5">{tier.title}</h4>
+                        <p className="text-slate-400 text-xs leading-relaxed font-light">{tier.description}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <p className="text-center text-slate-500 text-sm italic border-t border-[#C9A961]/15 pt-6">
+                "Ở AG1, bạn học, thực hành và được hỗ trợ, từ video đầu tiên đến đơn hàng đầu tiên."
+              </p>
+
+              <div className="text-center">
+                <button
+                  onClick={openPaymentModal}
+                  className="inline-flex items-center justify-center px-8 py-3.5 rounded-[10px] text-xs sm:text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] active:scale-95 text-[#14130F] transition-all duration-200 shadow-lg shadow-[#C9A961]/20 cursor-pointer uppercase tracking-wider"
+                >
+                  Tham gia Membership
+                  <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 3: BRAND */}
+          {activeTab === "brand" && (
+            <div className="space-y-8 animate-fadeIn">
+              <div className="text-center space-y-3 max-w-2xl mx-auto">
+                <h3 className="font-display font-extrabold text-2xl sm:text-3xl text-[#F5F4F0]">
+                  10+ Brand US Đang Tuyển Creator Ngay Trong Hệ Sinh Thái Này.
+                </h3>
+                <p className="text-slate-400 text-sm leading-relaxed">
+                  AG1 đồng thời là Brand Agency, làm việc trực tiếp với các thương hiệu TikTok Shop tại Mỹ đang cần nguồn creator chất lượng.
+                </p>
+              </div>
+
+              {/* Brand stats */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                {BRAND_STATS.map((stat, idx) => (
+                  <div key={idx} className="text-center p-3 sm:p-4 bg-white/5 rounded-2xl border border-[#C9A961]/15">
+                    <div className="font-display font-extrabold text-xl sm:text-2xl text-[#C9A961]">{stat.number}</div>
+                    <div className="text-[11px] sm:text-xs text-slate-400 mt-1 leading-snug">{stat.label}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Brand benefits */}
+              <div className="space-y-3">
+                <h4 className="text-[10px] font-bold tracking-widest text-[#C9A961] uppercase text-center">Brand nhận được gì</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {BRAND_BENEFITS.map((benefit, idx) => {
+                    const Icon = benefit.icon;
+                    return (
+                      <div key={idx} className="flex items-start space-x-3 bg-white/5 p-4 rounded-2xl border border-[#C9A961]/10">
+                        <div className="w-8 h-8 rounded-xl bg-[#C9A961]/10 flex items-center justify-center shrink-0">
+                          <Icon className="w-4 h-4 text-[#C9A961]" />
+                        </div>
+                        <span className="text-xs sm:text-sm text-slate-300 font-light leading-snug pt-1">{benefit.text}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Bridge back to creator */}
+              <div className="bg-[#C9A961]/[0.07] border border-[#C9A961]/25 rounded-2xl p-5 sm:p-6 text-center space-y-2">
+                <p className="text-[#C9A961] font-display font-bold text-sm sm:text-base">
+                  Nếu bạn là creator, đây là lý do cơ hội ở AG1 là có thật.
+                </p>
+                <p className="text-slate-400 text-xs sm:text-sm font-light leading-relaxed max-w-xl mx-auto">
+                  Bạn không phải tự đi tìm brand sau khi học xong. Các brand trong mạng lưới của AG1 tuyển creator mới hằng tháng. Việc của bạn là làm tốt phần nội dung.
+                </p>
+              </div>
+
+              {/* Brand contact CTA */}
+              <div className="text-center border-t border-[#C9A961]/15 pt-6 space-y-2">
+                <p className="text-xs text-slate-500">Bạn là brand hoặc seller US đang cần tuyển creator?</p>
+                <button
+                  onClick={handleBrandContact}
+                  className="inline-flex items-center text-xs font-bold text-[#C9A961] hover:text-[#A98B45] hover:underline cursor-pointer tracking-wider uppercase transition-colors"
+                >
+                  Đặt lịch trao đổi riêng với Hiếu
+                  <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/Community.tsx =====
+
+===== FILE: src/components/FAQ.tsx =====
+import React, { useState } from "react";
+import { FAQS } from "../data";
+import { ChevronDown, ChevronUp, ArrowRight } from "lucide-react";
+
+export default function FAQ() {
+  const [openFaqId, setOpenFaqId] = useState<string | null>("faq-1");
+
+  const toggleFaq = (id: string) => {
+    setOpenFaqId(openFaqId === id ? null : id);
+  };
+
+  const handleFBClick = () => {
+    window.open("https://www.facebook.com/share/g/18nGRfdbLQ/", "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <section className="py-14 md:py-24 bg-[#FAF9F6] border-y border-black/[0.05]">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+        
+        {/* Section Header */}
+        <div className="text-center space-y-4 mb-14">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            Giải đáp thắc mắc thường trực
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Câu Hỏi Thường Gặp (FAQs)
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base">
+            Nếu bạn vẫn còn những băn khoăn về cách vận hành hay khởi sự, vui lòng xem qua các thông tin tổng hợp hữu ích dưới đây.
+          </p>
+        </div>
+
+        {/* FAQ list */}
+        <div className="space-y-3">
+          {FAQS.map((faq) => {
+            const isOpen = openFaqId === faq.id;
+            return (
+              <div 
+                key={faq.id} 
+                className="bg-white rounded-2xl border border-black/5 overflow-hidden shadow-sm transition-all"
+              >
+                <button
+                  onClick={() => toggleFaq(faq.id)}
+                  id={`faq-btn-${faq.id}`}
+                  className="w-full text-left p-5 flex items-center justify-between hover:bg-[#C9A961]/5 cursor-pointer transition-colors"
+                >
+                  <div className="flex items-start space-x-3.5 pr-4">
+                    <span className="text-[10px] font-bold tracking-wider text-[#C9A961] bg-[#C9A961]/10 px-2 py-0.5 rounded border border-[#C9A961]/20 uppercase shrink-0 mt-0.5">
+                      HỎI
+                    </span>
+                    <span className="font-display font-bold text-slate-900 text-xs sm:text-sm leading-snug">
+                      {faq.question}
+                    </span>
+                  </div>
+                  <div className="shrink-0 p-1.5 rounded-full bg-slate-100 text-slate-500">
+                    {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </div>
+                </button>
+
+                {/* Answer block */}
+                {isOpen && (
+                  <div className="px-5 pb-5 pt-1.5 border-t border-black/[0.03] bg-[#FAF9F6]/50 text-slate-600 text-xs sm:text-sm leading-relaxed space-y-3">
+                    <p className="font-light">{faq.answer}</p>
+                    <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#C9A961]">
+                      Chuyên mục: {faq.category}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Call-to-action link if student has another question */}
+        <div className="text-center mt-12 bg-white rounded-2xl border border-black/5 p-5 max-w-xl mx-auto shadow-sm">
+          <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            Bạn có câu hỏi riêng biệt cần Coach Hiếu Trần tư vấn hay trò chuyện trực tiếp?
+          </p>
+          <button
+            onClick={handleFBClick}
+            id="faq-sub-cta-btn"
+            className="mt-3 inline-flex items-center text-xs font-bold text-[#C9A961] hover:text-[#A98B45] hover:underline cursor-pointer tracking-wider uppercase"
+          >
+            Vào Group Facebook để hỏi đáp trực tiếp
+            <ArrowRight className="w-3.5 h-3.5 ml-1" />
+          </button>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/FAQ.tsx =====
+
+===== FILE: src/components/Fears.tsx =====
+import React from "react";
+import { FEARS_AND_REALITIES } from "../data";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
+
+export default function Fears() {
+  return (
+    <section className="py-14 md:py-24 bg-[#FAF9F6] border-y border-[#C9A961]/20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            Nhưng Mình Vẫn Ngại…
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Ba Điều Hầu Hết Mọi Người Lo Trước Khi Bắt Đầu
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base">
+            Nếu bạn đang nghĩ một trong ba điều dưới đây — bạn không phải người duy nhất. Và đều có câu trả lời.
+          </p>
+        </div>
+
+        {/* 3 Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto">
+          {FEARS_AND_REALITIES.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-3xl border border-black/5 p-6 shadow-sm hover:shadow-lg hover:border-[#C9A961]/40 transition-all duration-300 flex flex-col"
+            >
+              {/* The fear quote */}
+              <div className="flex items-start space-x-3 pb-5 border-b border-black/[0.06]">
+                <AlertCircle className="w-5 h-5 text-slate-400 shrink-0 mt-0.5" />
+                <p className="font-display font-bold text-slate-900 text-sm leading-snug italic">
+                  {item.fear}
+                </p>
+              </div>
+
+              {/* The answer */}
+              <div className="pt-5 space-y-2.5 flex-grow">
+                <div className="flex items-center space-x-2 text-[#A98B45] font-bold text-[10px] uppercase tracking-widest">
+                  <CheckCircle2 className="w-4 h-4 text-[#C9A961] shrink-0" />
+                  <span>Thực tế</span>
+                </div>
+                <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-light">
+                  {item.truth}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/Fears.tsx =====
+
+===== FILE: src/components/FinalCTA.tsx =====
+import React from "react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
+import { usePaymentModal } from "./PaymentModal";
+
+export default function FinalCTA() {
+  const { openPaymentModal } = usePaymentModal();
+
+  return (
+    <section className="py-14 md:py-24 bg-[#14130F] border-t border-[#C9A961]/15">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center space-y-8">
+
+        <div className="space-y-4">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            299.000đ · Một lần · Mãi mãi
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl md:text-5xl text-[#F5F4F0] tracking-tight leading-tight">
+            Bạn Đã Sẵn Sàng Trở Thành <span className="text-[#C9A961]">Membership Mới</span> Chưa?
+          </h2>
+          <p className="text-slate-400 text-sm sm:text-base leading-relaxed max-w-xl mx-auto">
+            Hơn 4.000 người Việt đang cùng AG1 học cách dùng AI để bán hàng cho khách hàng toàn cầu. Bắt đầu khi bạn đã sẵn sàng.
+          </p>
+        </div>
+
+        <button
+          onClick={openPaymentModal}
+          className="inline-flex items-center justify-center px-10 py-4 rounded-[10px] text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] active:scale-95 text-[#14130F] transition-all duration-200 shadow-lg shadow-[#C9A961]/20 cursor-pointer uppercase tracking-wider"
+        >
+          Tham gia Membership
+          <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
+        </button>
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-xs text-slate-500">
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#C9A961]" />
+            <span>Thanh toán một lần, không gia hạn</span>
+          </div>
+          <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-700" />
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#C9A961]" />
+            <span>Không phí ẩn</span>
+          </div>
+          <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-700" />
+          <div className="flex items-center gap-1.5">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#C9A961]" />
+            <span>Truy cập ngay sau khi thanh toán</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/FinalCTA.tsx =====
+
+===== FILE: src/components/Footer.tsx =====
+import React from "react";
+import { Mail, Users, ExternalLink } from "lucide-react";
+
+export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
+  const handleFBClick = () => {
+    window.open("https://www.facebook.com/share/g/18nGRfdbLQ/", "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <footer className="bg-[#14130F] text-slate-400 py-16 border-t border-[#C9A961]/15">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 pb-12 border-b border-white/[0.05]">
+          
+          {/* Logo Brand Col */}
+          <div className="lg:col-span-4 space-y-4">
+            <div className="flex items-center space-x-3 text-white">
+              <img src="https://clinquant-vacherin-a00544.netlify.app/ag1-logo.png" alt="AG1" className="h-14 w-auto shrink-0 select-none" draggable={false} />
+              <div>
+                <span className="font-display font-extrabold text-base tracking-tight block leading-none">AFFILIATE GLOBAL</span>
+                <span className="text-[9px] font-mono tracking-widest text-[#C9A961] uppercase font-semibold">Academy &amp; Agency Partner</span>
+              </div>
+            </div>
+            <p className="text-xs sm:text-sm font-light leading-relaxed max-w-sm">
+              AG1 đồng hành cùng người mới học TikTok Affiliate và làm video bằng AI cho thị trường quốc tế, từng bước một, từ con số 0.
+            </p>
+          </div>
+
+          {/* Social Platforms Links */}
+          <div className="lg:col-span-3 space-y-4">
+            <h4 className="text-zinc-200 font-bold text-xs uppercase tracking-widest">Kênh chính thức</h4>
+            <ul className="space-y-2.5 text-xs sm:text-sm">
+              <li>
+                <button 
+                  onClick={handleFBClick}
+                  className="hover:text-[#C9A961] text-left transition-colors inline-flex items-center cursor-pointer"
+                >
+                  <Users className="w-4 h-4 mr-2 text-[#C9A961]" />
+                  <span>Cộng đồng Facebook (Hỗ trợ)</span>
+                  <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
+                </button>
+              </li>
+              <li>
+                <a 
+                  href="https://www.tiktok.com/@hieutran_coaching" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hover:text-[#C9A961] transition-colors inline-flex items-center"
+                >
+                  <span className="w-4 h-4 inline-flex items-center justify-center text-[10px] bg-slate-800 text-white rounded-full mr-2 font-black">
+                    T
+                  </span>
+                  <span>TikTok Official Channel</span>
+                  <ExternalLink className="w-3 h-3 ml-1 opacity-50" />
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Support Email Contact Group */}
+          <div className="lg:col-span-2 space-y-4">
+            <h4 className="text-zinc-200 font-bold text-xs uppercase tracking-widest">Hỗ trợ đối tác</h4>
+            <div className="flex items-center space-x-2 text-xs sm:text-sm">
+              <Mail className="w-4 h-4 text-slate-500 shrink-0" />
+              <a href="mailto:support@1percentaffiliate.global" className="hover:text-[#C9A961] transition-colors break-all">
+                support@1percentaffiliate.global
+              </a>
+            </div>
+          </div>
+
+          {/* Legal Compliance standard statement */}
+          <div className="lg:col-span-3 space-y-4">
+            <h4 className="text-zinc-200 font-bold text-xs uppercase tracking-widest">Bản quyền &amp; Sở hữu</h4>
+            <p className="text-[11px] leading-relaxed font-light">
+              Trang web này được sở hữu và vận hành bởi AG1 (1% Affiliate Global). TikTok, TikTok Shop, CapCut và các tên thương hiệu khác là nhãn hiệu đã đăng ký của chủ sở hữu tương ứng. AG1 là đơn vị đào tạo độc lập, không trực thuộc TikTok Inc.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Closing details */}
+        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs font-light gap-4 text-center sm:text-left">
+          <p>© {currentYear} AG1 (1% Affiliate Global). Bảo lưu mọi quyền.</p>
+          <div className="flex space-x-4">
+            <a href="#privacy" className="hover:text-zinc-300 transition-colors">Điều khoản dịch vụ</a>
+            <span>•</span>
+            <a href="#terms" className="hover:text-zinc-300 transition-colors">Chính sách bảo mật</a>
+          </div>
+        </div>
+
+      </div>
+    </footer>
+  );
+}
+
+===== HẾT FILE: src/components/Footer.tsx =====
+
+===== FILE: src/components/Header.tsx =====
+import React, { useState } from "react";
+import { ArrowRight, Users, Sparkles } from "lucide-react";
+
+export default function Header() {
+  const handleFBClick = () => {
+    window.open("https://www.facebook.com/groups/1224643669497656?locale=vi_VN", "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <header className="sticky top-0 z-50 bg-[#14130F]/95 backdrop-blur-md border-b border-[#C9A961]/20 shadow-lg">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-3">
+        {/* Logo and Brand Name */}
+        <div className="flex items-center space-x-2.5 sm:space-x-3 min-w-0">
+          <img src="https://clinquant-vacherin-a00544.netlify.app/ag1-logo.png" alt="AG1" className="h-12 sm:h-14 w-auto shrink-0 select-none" draggable={false} />
+          <div className="hidden sm:block">
+            <span className="font-display font-extrabold text-base tracking-tight text-[#F5F4F0] block leading-none">
+              AFFILIATE GLOBAL
+            </span>
+            <span className="hidden sm:block text-[9px] font-mono tracking-widest text-[#C9A961]/80 uppercase font-semibold">
+              ACADEMY &amp; AGENCY PARTNER
+            </span>
+          </div>
+        </div>
+
+        {/* Action Button - Fully responsive desktop & tablet */}
+        <div className="flex items-center space-x-4">
+          
+          <button 
+            onClick={handleFBClick}
+            id="header-cta-btn"
+            className="group inline-flex items-center justify-center px-3 sm:px-4 py-2.5 rounded-[10px] text-[11px] sm:text-xs whitespace-nowrap shrink-0 font-extrabold bg-[#C9A961] text-[#14130F] hover:bg-[#A98B45] active:scale-95 transition-all shadow-md cursor-pointer tracking-wider uppercase"
+          >
+            <Users className="hidden sm:block w-4 h-4 mr-2" />
+            <span>Tham gia cộng đồng</span>
+            <ArrowRight className="hidden sm:block w-4 h-4 ml-1.5 opacity-70 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+===== HẾT FILE: src/components/Header.tsx =====
+
+===== FILE: src/components/Hero.tsx =====
+import React from "react";
+import { ArrowRight, Sparkles, Target, Globe, Handshake } from "lucide-react";
+import { usePaymentModal } from "./PaymentModal";
+
+// Bốn giá trị cốt lõi của AG1: niềm tin vận hành + lợi ích cho Thành viên (B2C) và Đối tác (B2B)
+const CORE_VALUES = [
+  {
+    icon: Target,
+    label: "Thực chiến",
+    title: "Thực lực tạo thực tích",
+    text: "Học từ thực tế, triển khai trên sản phẩm và thị trường thật. Kết quả được nhìn qua nội dung, đơn hàng và dữ liệu kinh doanh.",
+    member: "Cách làm thực tế để bắt đầu và cải thiện khả năng kiếm tiền",
+    partner: "Creator định hướng doanh số, đo bằng đơn hàng thật",
+  },
+  {
+    icon: Sparkles,
+    label: "Công nghệ",
+    title: "AI thần tốc, Content chạm đỉnh",
+    text: "Ứng dụng AI để nghiên cứu, sáng tạo và sản xuất Content hiệu quả hơn. Một người có thể vận hành quy trình từng cần cả một đội ngũ.",
+    member: "Nội dung thu hút hơn, sản lượng lớn hơn, ít nguồn lực hơn",
+    partner: "Sản xuất nội dung quy mô lớn với quy trình chuẩn hóa",
+  },
+  {
+    icon: Globe,
+    label: "Tiên phong Global",
+    title: "Nghĩ vượt biên giới, bán khắp năm châu",
+    text: "Tư duy thị trường quốc tế ngay từ đầu. Kết nối nội dung với nhu cầu khách hàng toàn cầu và các mô hình thương mại xuyên biên giới.",
+    member: "Tiếp cận người mua quốc tế, phát triển nguồn thu toàn cầu",
+    partner: "Creator tiếp cận và phân phối sản phẩm ra thị trường quốc tế",
+  },
+  {
+    icon: Handshake,
+    label: "Cùng tạo doanh thu",
+    title: "Đội ngũ chung sức tạo doanh thu khủng",
+    text: "Creator tạo ra doanh số, đối tác mở rộng thị trường. AG1 kết nối nguồn lực để cả hệ sinh thái cùng tăng trưởng khi các bên cùng thành công.",
+    member: "Cơ hội hợp tác, học hỏi và tham gia hệ sinh thái thương mại",
+    partner: "Mạng lưới phân phối hướng tới kết quả đo lường được",
+  },
+];
+
+// Số liệu quy mô (cập nhật tại đây khi có số mới đã xác minh)
+const PROOF_STATS = [
+  { number: "4.000+", label: "Thành viên cộng đồng AG1" },
+  { number: "1.200+", label: "Thành viên thực chiến AG1" },
+  { number: "600.000 USD", label: "GMV cộng đồng tạo ra trong Q3/2026" },
+];
+
+export default function Hero() {
+  const { openPaymentModal } = usePaymentModal();
+
+  return (
+    <section className="relative overflow-hidden bg-[#FAF9F6] pt-10 pb-20 md:pt-16 md:pb-24">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <div className="w-full bg-[#14130F] border border-[#C9A961]/25 rounded-[2rem] p-6 sm:p-10 md:p-14 relative overflow-hidden text-[#F5F4F0] shadow-xl">
+          <img
+            src="https://clinquant-vacherin-a00544.netlify.app/community.webp"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover opacity-[0.85] pointer-events-none select-none"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#14130F]/70 via-[#14130F]/35 to-[#14130F]/80 pointer-events-none" />
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse 70% 55% at 50% 38%, rgba(20,19,15,0.82) 0%, rgba(20,19,15,0.55) 45%, transparent 75%)" }}
+          />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-[#C9A961] opacity-[0.08] blur-[120px] -mr-32 -mt-32 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#C9A961] opacity-[0.04] blur-[100px] -ml-32 -mb-32 pointer-events-none" />
+
+          <div className="relative z-10 max-w-5xl mx-auto text-center space-y-7">
+
+            {/* Badge: đây là định vị và mục tiêu dài hạn */}
+            <div className="inline-flex items-center space-x-2 bg-[#C9A961]/10 border border-[#C9A961]/30 px-3.5 py-1.5 rounded-lg text-[#C9A961] text-xs font-bold tracking-wide uppercase backdrop-blur-sm">
+              <Sparkles className="w-3.5 h-3.5 text-[#C9A961] animate-pulse" />
+              <span>Tầm nhìn dài hạn của AG1</span>
+            </div>
+
+            {/* Tiêu đề chính */}
+            <h1 className="font-display font-extrabold text-3xl sm:text-4.5xl md:text-5xl lg:text-5.5xl text-[#F5F4F0] tracking-tight leading-[1.14] drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)] max-w-4xl mx-auto">
+              <span className="text-[#C9A961]">10.000 người Việt</span>
+              <br />
+              xây dựng thu nhập từ khách hàng toàn cầu bằng Content AI
+            </h1>
+
+            <p className="text-slate-300 text-sm sm:text-base leading-relaxed font-light max-w-2xl mx-auto drop-shadow-[0_1px_8px_rgba(0,0,0,0.9)]">
+              AG1 kết nối, đào tạo và đồng hành cùng cộng đồng Creator Việt Nam ứng dụng{" "}
+              <strong className="text-[#C9A961] font-semibold">Content AI vào Affiliate</strong> để xây dựng năng lực bán hàng, tạo thu nhập từ khách hàng quốc tế, với mục tiêu{" "}
+              <strong className="text-[#C9A961] font-semibold">100 tỷ/năm</strong>.
+            </p>
+
+            {/* CTA */}
+            <div className="space-y-6">
+              <button
+                onClick={openPaymentModal}
+                id="hero-cta-btn"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-10 py-4 rounded-[10px] text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] active:scale-95 text-[#14130F] transition-all duration-200 shadow-lg shadow-[#C9A961]/15 cursor-pointer uppercase tracking-wider"
+              >
+                <span>Tham gia Membership</span>
+                <ArrowRight className="w-4 h-4 ml-2 shrink-0" />
+              </button>
+
+              {/* Số liệu quy mô cộng đồng */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 max-w-2xl mx-auto">
+                {PROOF_STATS.map((s, i) => (
+                  <div key={s.label} className={`${i === 2 ? "col-span-2 sm:col-span-1 " : ""}bg-black/30 backdrop-blur-sm border border-[#C9A961]/20 rounded-xl px-2 py-3 sm:p-4`}>
+                    <div className="font-display font-extrabold text-lg sm:text-2xl text-[#C9A961] leading-tight whitespace-nowrap">{s.number}</div>
+                    <div className="text-[10px] sm:text-xs text-slate-300 mt-1 leading-snug">{s.label}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bốn giá trị cốt lõi */}
+            <div className="pt-4 space-y-4">
+              <p className="text-[10px] sm:text-xs font-bold tracking-widest text-[#C9A961] uppercase">4 giá trị cốt lõi của AG1</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-left">
+                {CORE_VALUES.map((v) => {
+                  const Icon = v.icon;
+                  return (
+                    <div key={v.label} className="flex flex-col justify-center bg-[#14130F]/80 backdrop-blur-sm border border-[#C9A961]/20 rounded-2xl p-4 sm:p-5 hover:border-[#C9A961]/50 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className="w-9 h-9 rounded-xl bg-[#C9A961]/15 flex items-center justify-center shrink-0">
+                          <Icon className="w-[18px] h-[18px] text-[#C9A961]" />
+                        </span>
+                        <div className="min-w-0">
+                          <div className="text-[10px] font-bold tracking-widest text-[#C9A961] uppercase">{v.label}</div>
+                          <h3 className="font-display font-bold text-sm sm:text-base text-[#F5F4F0] leading-snug">{v.title}</h3>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/Hero.tsx =====
+
+===== FILE: src/components/MobileStickyCTA.tsx =====
+import React, { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
+import { usePaymentModal } from "./PaymentModal";
+
+// Thanh "Tham gia Membership" ghim đáy màn hình — chỉ hiện trên điện thoại,
+// xuất hiện sau khi khách cuộn qua phần đầu trang.
+export default function MobileStickyCTA() {
+  const { openPaymentModal } = usePaymentModal();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    // Hiện khi nút "Tham gia Membership" ở phần đầu trang đã cuộn khuất
+    const onScroll = () => {
+      const hero = document.getElementById("hero-cta-btn");
+      setShow(hero ? hero.getBoundingClientRect().bottom < 0 : window.scrollY > 900);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <div
+      className={`md:hidden fixed inset-x-0 bottom-0 z-[9000] transition-transform duration-300 ${
+        show ? "translate-y-0" : "translate-y-full"
+      }`}
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
+      <div className="bg-[#14130F]/95 backdrop-blur-md border-t border-[#C9A961]/25 px-4 py-3 flex items-center gap-3 shadow-[0_-8px_24px_rgba(0,0,0,0.25)]">
+        <div className="leading-tight shrink-0">
+          <div className="font-display font-extrabold text-[#C9A961] text-base">299.000đ</div>
+          <div className="text-[10px] text-slate-400 uppercase tracking-wider">Trọn đời</div>
+        </div>
+        <button
+          type="button"
+          onClick={openPaymentModal}
+          className="flex-1 inline-flex items-center justify-center h-12 rounded-[10px] bg-[#C9A961] active:bg-[#A98B45] text-[#14130F] text-xs font-extrabold uppercase tracking-wider shadow-lg shadow-[#C9A961]/20"
+        >
+          Tham gia Membership
+          <ArrowRight className="w-4 h-4 ml-1.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+===== HẾT FILE: src/components/MobileStickyCTA.tsx =====
+
+===== FILE: src/components/PaymentModal.tsx =====
+import React, {
+  createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode,
+} from "react";
+import {
+  X, Copy, Check, Upload, ArrowRight, ArrowLeft, Loader2,
+  CircleCheck, Users, Info, AlertCircle, ExternalLink,
+  ChevronDown, PenLine,
+} from "lucide-react";
+
+/* ============================================================
+   CẤU HÌNH — sửa mọi thông số tại đây
+   ============================================================ */
+const CONFIG = {
+  planName: "Membership trọn đời",
+  price: 299000,
+
+  // Thông tin chuyển khoản
+  bankId: "MB",                                    // mã ngân hàng VietQR
+  bankName: "MB Bank",
+  accountNo: "999178999",
+  accountName: "HO KINH DOANH VO HONG NHAT",
+  transferPrefix: "",                              // tiền tố nội dung CK, để trống nếu không cần
+
+  // Để trống = tự sinh QR VietQR có sẵn số tiền + nội dung.
+  // Có link = dùng ảnh QR tĩnh (khách phải tự nhập số tiền và nội dung).
+  qrImageUrl: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAhIAAAISAQAAAACxRhsSAAAEB0lEQVR42u2dXW7bQAyEifoAOpKuriPpAAIYe3f5pzRFgQDUy6cHI3HaeTAGQ86Quxb99XMIGGCAAQYYH4xT1rOf4+Wlsusl6+X9qx6b5hf9/JP1fP76R37/gAHGP5/BuvFMnspm7NTTuPuh45u2g6dX/nX8X3gKRhNPF/WMnYu7p7/3YfGU3LfGvkX4pSG+8BSMZp7qZe++ZXM1BPOnRcxB0VH84SkYz+npIObSTqvx1gtMxuolqUmAp2A80J+O8m50NEelamZqlPxR/JX+FIx2nobfXw3p/7zg98Ho5Wl6sklaoupCm9W2Zlt8pmA01f2jtquemiahjcDqKG0tPAWjte5PAZVNPYh66Xc9VS/+y3TBUzAafVSlaMyeRi/gU6gZTo2/DilFT8Fo1FML9q1dHfxTi1ONmN7Mnm768ftgNOrpSkjFZ/neEKx03yN+qRSl7oPR6Pe/OSqn7QpWr8TY5PzhKRh9PL3cQuUlkxTnTz3dPLXSPAqAp2D01X1rSENArSEw5x8vu/8BnoLRWfdNHZdnCjpaG+CcjCkA+SkYT/Wn7vctl/orWdX3qeEpGH11P0ho3l5tqT9iUqv7YrmACP0pGM16mjnpK31bWeCXzfsDLUN+eApGW923DdO8bmJL/eHyxbOqmFHBUzC66v59FOVFPXv7yKqY74PxAE+ddZOdbpLKvlSsT9lyFT4KjG6eznpezpamNiCORqmG6YenYLT7fcnL+mmHKtX472E//SkYzT5KXCJjbl+V9ZZG+bQKnoLRqKc3xVwmyX7y7dR7M4uegtGnp/GU8aj3rNvaOk1mSk+/I4XPFIwePZ1xfhx/1tKprl4gJlMmr+gpGI16epV9/pRBlQWp3fvYQ/JpVHgKRhtPD29Dd41DUlc+5TfYeaRZqu/485mC0cNT08k4If1KS6iJyvlmFHIpMLr9/q5ZIvPhJx/oRx+br5mk7oPRyFN39DmNuilrvJw58YenYPTwNF92Yt4+a2xc4Hu/CZW6D0Zv3beiftucSi3sHoFpnfTDUzDa9NRqfFpH3UM76w3okQvg98Ho9Pvl+yF8Ezry07jLZ5Z8T1LxUWB08tTDqfzemW+YNNPvi6kb5/fBaOZpWjIJ53+/QzK+nEdqfsVnCkaXj4rDfFs5LiVe6PdyT6qQS4HRrKdaknxZE6cfrz6NURTzfTB69XTZ+lc6AZUO88W56LRAbfYfnoLRw9Ochpbd/bwltWL/9G19zPfBaOapiNRb+bfIAPzxKcBh/Sk8BeMhntpe33WfURlZ863onI8C4wme2jftxowqbFV+b7vSLRTwFIzm/nTmUmUPJX/naQmnuK8PjEf9frr25Iej+7FUTX8KRhtPf/scYIABBhhg6PEFo63Ui5ZBHoIAAAAASUVORK5CYII=",
+
+  // ⚠️ BẮT BUỘC ĐIỀN: URL Web App Google Apps Script
+  sheetWebAppUrl: "https://script.google.com/macros/s/AKfycbxrOh1Fo7u5c75pX6t4eAOtPFGEhxjUToLkvQWAdivXxXOIa2InRqHoalffaVW3PUh0bA/exec",
+
+  // Link cộng đồng
+  discordInvite: "https://discord.gg/ZKdp9DGB",
+  facebookGroup: "https://www.facebook.com/share/g/18nGRfdbLQ/",
+  zaloSupport: "https://zalo.me/0812338344",
+};
+
+/* ============================================================
+   BÀI GIỚI THIỆU — danh sách ý để khách chọn
+   ============================================================ */
+interface IntroGroup {
+  key: string;
+  label: string;
+  multi: boolean;
+  placeholder: string;
+  items: string[];
+}
+
+const INTRO_OPTIONS: IntroGroup[] = [
+  {
+    key: "role",
+    label: "Bạn là ai",
+    multi: true,
+    placeholder: "Chọn một hoặc nhiều",
+    items: [
+      "người đi làm văn phòng",
+      "sinh viên",
+      "mẹ bỉm sữa",
+      "freelancer",
+      "chủ shop kinh doanh online",
+    ],
+  },
+  {
+    key: "goal",
+    label: "Mục tiêu khi tham gia",
+    multi: true,
+    placeholder: "Chọn một hoặc nhiều",
+    items: [
+      "có thêm thu nhập từ thị trường US",
+      "học làm video bằng AI",
+      "bán hàng trên TikTok Shop US",
+      "được kết nối với brand",
+      "học hỏi từ những người đi trước",
+    ],
+  },
+  {
+    key: "exp",
+    label: "Kinh nghiệm hiện tại",
+    multi: false,
+    placeholder: "Chọn mức kinh nghiệm",
+    items: [
+      "mình hoàn toàn mới, chưa biết gì",
+      "mình đã thử nhưng chưa ra đơn",
+      "mình đã có vài đơn đầu tiên",
+    ],
+  },
+  {
+    key: "time",
+    label: "Thời gian mỗi ngày",
+    multi: false,
+    placeholder: "Chọn quỹ thời gian",
+    items: ["khoảng 1 đến 2 tiếng", "khoảng 3 đến 4 tiếng", "toàn thời gian"],
+  },
+  {
+    key: "wish",
+    label: "Mong muốn",
+    multi: true,
+    placeholder: "Chọn một hoặc nhiều",
+    items: [
+      "tìm bạn đồng hành cùng làm",
+      "được góp ý video",
+      "ra đơn đầu tiên trong tháng này",
+    ],
+  },
+];
+
+/** Nối mảng theo lối tiếng Việt: a, b và c */
+function joinVi(arr: string[]): string {
+  if (arr.length <= 1) return arr[0] || "";
+  return arr.slice(0, -1).join(", ") + " và " + arr[arr.length - 1];
+}
+
+const DRAFT_KEY = "ag1_payment_draft";
+const MAX_CONTENT_LEN = 50;
+
+/* ============================================================
+   TIỆN ÍCH
+   ============================================================ */
+
+/** Bỏ dấu tiếng Việt, bỏ ký tự đặc biệt và khoảng trắng */
+function slugify(input: string): string {
+  return input
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d").replace(/Đ/g, "D")
+    .replace(/[^a-zA-Z0-9]/g, "");
+}
+
+const onlyDigits = (s: string) => s.replace(/\D/g, "");
+
+const formatPrice = (n: number) => n.toLocaleString("vi-VN") + "đ";
+
+/** Nội dung chuyển khoản = tiền tố + SĐT + tên Discord, tối đa 50 ký tự */
+function buildTransferContent(phone: string, discord: string): string {
+  const p = onlyDigits(phone);
+  const d = slugify(discord);
+  if (!p && !d) return "SDT TENDISCORD";
+  const raw = `${CONFIG.transferPrefix}${p} ${d}`.trim();
+  return raw.slice(0, MAX_CONTENT_LEN);
+}
+
+/** Link QR VietQR tự sinh, đã nhúng số tiền và nội dung */
+function buildQrUrl(content: string): string {
+  if (CONFIG.qrImageUrl) return CONFIG.qrImageUrl;
+  const base = `https://img.vietqr.io/image/${CONFIG.bankId}-${CONFIG.accountNo}-compact2.png`;
+  const params = new URLSearchParams({
+    amount: String(CONFIG.price),
+    addInfo: content,
+    accountName: CONFIG.accountName,
+  });
+  return `${base}?${params.toString()}`;
+}
+
+/**
+ * Nén ảnh bill phía trình duyệt trước khi gửi.
+ * Hạ chiều rộng tối đa 1200px, xuất JPEG chất lượng 0.8.
+ * Giúp payload từ vài MB xuống còn khoảng 200-400KB.
+ */
+async function compressImage(
+  file: File
+): Promise<{ base64: string; type: string; name: string }> {
+  const dataUrl = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = dataUrl;
+  });
+
+  const MAX_W = 1200;
+  const scale = Math.min(1, MAX_W / img.width);
+  const w = Math.round(img.width * scale);
+  const h = Math.round(img.height * scale);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    // Không dùng được canvas thì gửi nguyên bản
+    return {
+      base64: dataUrl.split(",")[1] || "",
+      type: file.type,
+      name: file.name,
+    };
+  }
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fillRect(0, 0, w, h);
+  ctx.drawImage(img, 0, 0, w, h);
+
+  const out = canvas.toDataURL("image/jpeg", 0.8);
+  const baseName = file.name.replace(/\.[^.]+$/, "");
+  return {
+    base64: out.split(",")[1] || "",
+    type: "image/jpeg",
+    name: `${baseName}.jpg`,
+  };
+}
+
+/* ============================================================
+   CONTEXT — cho mọi CTA trên trang gọi mở popup
+   ============================================================ */
+interface PaymentModalContextValue {
+  openPaymentModal: () => void;
+}
+
+const PaymentModalContext = createContext<PaymentModalContextValue>({
+  openPaymentModal: () => {},
+});
+
+export function usePaymentModal() {
+  return useContext(PaymentModalContext);
+}
+
+const MEMBERSHIP_URL = "https://cheerful-parfait-4ac75a.netlify.app";
+
+export function PaymentModalProvider({ children }: { children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  // Nút "Tham gia Membership" dẫn sang trang Membership riêng
+  const openPaymentModal = useCallback(() => {
+    const url = MEMBERSHIP_URL;
+    const w = window.open(url, "_blank", "noopener,noreferrer");
+    if (!w) window.location.href = url;
+  }, []);
+
+  // Mở sẵn popup nếu URL có #tham-gia
+  useEffect(() => {
+    if (window.location.hash === "#tham-gia") setOpen(true);
+  }, []);
+
+  return (
+    <PaymentModalContext.Provider value={{ openPaymentModal }}>
+      {children}
+      <PaymentModal open={open} onClose={() => setOpen(false)} />
+    </PaymentModalContext.Provider>
+  );
+}
+
+/* ============================================================
+   COMPONENT PHỤ
+   ============================================================ */
+
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value);
+    } catch {
+      // Trình duyệt cũ hoặc không có quyền clipboard
+      const ta = document.createElement("textarea");
+      ta.value = value;
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand("copy"); } catch { /* bỏ qua */ }
+      document.body.removeChild(ta);
+    }
+    setCopied(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setCopied(false), 1500);
+  };
+
+  useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
+
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      aria-label={`Sao chép ${label}`}
+      className="shrink-0 w-7 h-7 rounded-lg bg-[#C9A961]/15 border border-[#C9A961]/30 flex items-center justify-center text-[#C9A961] hover:bg-[#C9A961]/25 transition-colors cursor-pointer"
+    >
+      {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+    </button>
+  );
+}
+
+function InfoRow({
+  label, value, mono, highlight, copyable,
+}: {
+  label: string; value: string; mono?: boolean; highlight?: boolean; copyable?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between gap-3 px-4 py-3 rounded-xl border ${
+        highlight
+          ? "bg-[#C9A961]/10 border-[#C9A961]/40"
+          : "bg-white/5 border-white/10"
+      }`}
+    >
+      <span className="text-[11px] text-slate-400 shrink-0">{label}</span>
+      <div className="flex items-center gap-2 min-w-0">
+        <span
+          className={`text-sm text-[#F5F4F0] font-semibold truncate ${mono ? "font-mono" : ""}`}
+          title={value}
+        >
+          {value}
+        </span>
+        {copyable && <CopyButton value={value} label={label} />}
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   MODAL CHÍNH — 3 bước
+   ============================================================ */
+interface Props {
+  open: boolean;
+  onClose: () => void;
+}
+
+function PaymentModal({ open, onClose }: Props) {
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [discord, setDiscord] = useState("");
+  const [email, setEmail] = useState("");
+  const [facebook, setFacebook] = useState("");
+
+  const [billFile, setBillFile] = useState<File | null>(null);
+  const [billPreview, setBillPreview] = useState<string>("");
+
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [qrFailed, setQrFailed] = useState(false);
+
+  const nameInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  /* --- Bài giới thiệu cộng đồng --- */
+  const [introSel, setIntroSel] = useState<Record<string, string[]>>(() => {
+    const init: Record<string, string[]> = {};
+    INTRO_OPTIONS.forEach((g) => {
+      // Nhóm chọn một: mặc định chọn sẵn ý đầu tiên
+      init[g.key] = g.multi ? [] : [g.items[0]];
+    });
+    return init;
+  });
+  const [introText, setIntroText] = useState("");
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "blocked">("idle");
+  const [showComposer, setShowComposer] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const introRef = useRef<HTMLTextAreaElement>(null);
+
+  const transferContent = buildTransferContent(phone, discord);
+
+  /* --- Khôi phục bản nháp khi mở lại --- */
+  useEffect(() => {
+    if (!open) return;
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        setName(d.name || "");
+        setPhone(d.phone || "");
+        setDiscord(d.discord || "");
+        setEmail(d.email || "");
+        setFacebook(d.facebook || "");
+      }
+    } catch { /* localStorage không dùng được, bỏ qua */ }
+  }, [open]);
+
+  /* --- Lưu nháp mỗi khi đổi thông tin ở bước 1 --- */
+  useEffect(() => {
+    if (!open) return;
+    try {
+      localStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ name, phone, discord, email, facebook })
+      );
+    } catch { /* bỏ qua */ }
+  }, [open, name, phone, discord, email, facebook]);
+
+  /* --- Khoá cuộn nền + phím Escape + autofocus --- */
+  useEffect(() => {
+    if (!open) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") attemptClose();
+    };
+    document.addEventListener("keydown", onKey);
+
+    const t = setTimeout(() => nameInputRef.current?.focus(), 120);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", onKey);
+      clearTimeout(t);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, step]);
+
+  /* --- Nhắc trước khi đóng ở bước 2 (có thể đã chuyển khoản) --- */
+  const attemptClose = () => {
+    if (step === 2) {
+      const ok = window.confirm(
+        "Bạn đang ở bước gửi xác nhận. Nếu đã chuyển khoản mà chưa gửi bill, team sẽ không biết để duyệt.\n\nVẫn đóng cửa sổ này?"
+      );
+      if (!ok) return;
+    }
+    if (step === 3) {
+      try { localStorage.removeItem(DRAFT_KEY); } catch { /* bỏ qua */ }
+    }
+    setStep(1);
+    setError("");
+    setBillFile(null);
+    setBillPreview("");
+    onClose();
+  };
+
+  /* --- Tích / bỏ tích một ý --- */
+  const toggleIntro = (key: string, value: string, multi: boolean) => {
+    setIntroSel((prev) => {
+      if (!multi) return { ...prev, [key]: [value] };
+      const cur = prev[key] || [];
+      return {
+        ...prev,
+        [key]: cur.includes(value)
+          ? cur.filter((v) => v !== value)
+          : [...cur, value],
+      };
+    });
+  };
+
+  /* --- Ghép bài viết mỗi khi đổi lựa chọn --- */
+  useEffect(() => {
+    if (step !== 3) return;
+    const role = introSel.role || [];
+    const goal = introSel.goal || [];
+    const exp = (introSel.exp || [])[0];
+    const time = (introSel.time || [])[0];
+    const wish = introSel.wish || [];
+
+    const lines: string[] = ["Chào cả nhà AG1 👋"];
+    lines.push(
+      `Mình là ${name.trim() || "[tên của bạn]"}${role.length ? ", " + joinVi(role) : ""}.`
+    );
+    if (goal.length) lines.push(`Mình tham gia cộng đồng để ${joinVi(goal)}.`);
+    if (exp) lines.push(`Hiện tại ${exp}.`);
+    if (time) lines.push(`Mỗi ngày mình dành ${time} cho việc này.`);
+    if (wish.length) lines.push(`Mong muốn của mình là ${joinVi(wish)}.`);
+    lines.push("Rất vui được làm quen và đồng hành cùng mọi người! 🚀");
+    lines.push("", "#1PercentAffiliate #ThanhVienMoi");
+
+    setIntroText(lines.join("\n"));
+  }, [step, introSel, name]);
+
+  /* --- Sao chép bài và mở group Facebook trong cùng một cú bấm --- */
+  const handleCopyAndOpen = () => {
+    const text = introText.trim();
+
+    // Sao chép đồng bộ trước để trình duyệt không chặn
+    let copied = false;
+    const ta = introRef.current;
+    if (ta) {
+      ta.focus();
+      ta.select();
+      try {
+        copied = document.execCommand("copy");
+      } catch {
+        /* bỏ qua */
+      }
+      ta.setSelectionRange(0, 0);
+      ta.blur();
+    }
+    // Cách hiện đại làm dự phòng
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(() => {});
+      copied = true;
+    }
+
+    // Mở Facebook ngay trong cùng cú bấm, nếu không trình duyệt sẽ chặn
+    const win = window.open(CONFIG.facebookGroup, "_blank", "noopener");
+
+    if (win) {
+      setCopyState("copied");
+      setTimeout(() => setCopyState("idle"), 4000);
+    } else {
+      // Trình duyệt chặn tab mới — giữ trạng thái để hiện nút dự phòng
+      setCopyState("blocked");
+    }
+  };
+
+  if (!open) return null;
+
+  /* --- Bước 1 → 2 --- */
+  const goToStep2 = () => {
+    setError("");
+    if (!name.trim()) { setError("Vui lòng nhập họ và tên."); return; }
+    const d = onlyDigits(phone);
+    if (d.length < 9 || d.length > 11) {
+      setError("Số điện thoại chưa đúng, vui lòng kiểm tra lại."); return;
+    }
+    if (!discord.trim()) { setError("Vui lòng nhập tên Discord."); return; }
+    setQrFailed(false);
+    setStep(2);
+  };
+
+  /* --- Chọn ảnh bill --- */
+  const handlePickFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setError("");
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!f.type.startsWith("image/")) {
+      setError("File bill phải là ảnh (JPG, PNG...)."); return;
+    }
+    if (f.size > 10 * 1024 * 1024) {
+      setError("Ảnh bill lớn hơn 10MB, vui lòng chụp lại hoặc nén ảnh."); return;
+    }
+    setBillFile(f);
+    const reader = new FileReader();
+    reader.onload = () => setBillPreview(reader.result as string);
+    reader.readAsDataURL(f);
+  };
+
+  /* --- Gửi dữ liệu --- */
+  const handleSubmit = async () => {
+    setError("");
+    if (!billFile) { setError("Vui lòng tải lên ảnh bill chuyển khoản."); return; }
+    if (!CONFIG.sheetWebAppUrl) {
+      setError("Chưa cấu hình link Google Sheet. Vui lòng nhắn Zalo để được hỗ trợ."); return;
+    }
+
+    setSubmitting(true);
+    try {
+      const compressed = await compressImage(billFile);
+
+      const res = await fetch(CONFIG.sheetWebAppUrl, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({
+          name: name.trim(),
+          phone: onlyDigits(phone),
+          discord: discord.trim(),
+          email: email.trim(),
+          facebook: facebook.trim(),
+          amount: CONFIG.price,
+          transferContent,
+          source: window.location.href,
+          billName: compressed.name,
+          billType: compressed.type,
+          billBase64: compressed.base64,
+        }),
+      });
+
+      const json = await res.json().catch(() => null);
+      if (json && json.ok) {
+        setStep(3);
+      } else {
+        setError("Gửi chưa thành công. Vui lòng thử lại hoặc nhắn Zalo để được hỗ trợ.");
+      }
+    } catch {
+      setError("Gửi chưa thành công. Vui lòng thử lại hoặc nhắn Zalo để được hỗ trợ.");
+    }
+    setSubmitting(false);
+  };
+
+  const inputClass =
+    "w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-[#F5F4F0] placeholder:text-slate-500 focus:outline-none focus:border-[#C9A961] focus:ring-2 focus:ring-[#C9A961]/25 transition-all";
+  const labelClass = "text-xs font-semibold text-slate-300 block mb-1.5";
+  const primaryBtn =
+    "w-full inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] active:scale-[0.98] text-[#14130F] transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wide";
+
+  return (
+    <div
+      className="fixed inset-0 z-[10000] flex items-start sm:items-center justify-center p-4 bg-black/75 backdrop-blur-sm overflow-y-auto"
+      onClick={attemptClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Tham gia membership"
+    >
+      <div
+        className="relative w-full max-w-lg my-auto bg-[#14130F] border border-[#C9A961]/30 rounded-3xl shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Nút đóng */}
+        <button
+          type="button"
+          onClick={attemptClose}
+          aria-label="Đóng"
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 border border-[#C9A961]/20 flex items-center justify-center text-slate-400 hover:text-[#C9A961] hover:border-[#C9A961]/50 transition-all cursor-pointer z-10"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        <div className="p-7 sm:p-9">
+          {/* Thanh tiến trình — ẩn ở bước 3 */}
+          {step < 3 && (
+            <div className="space-y-2 mb-7 pr-10">
+              <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-[#C9A961]">
+                <span>{step === 1 ? "Bước 1 · Thông tin" : "Bước 2 · Chuyển khoản"}</span>
+                <span>{step}/2</span>
+              </div>
+              <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[#C9A961] rounded-full transition-all duration-300"
+                  style={{ width: `${(step / 2) * 100}%` }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ====================== BƯỚC 1 ====================== */}
+          {step === 1 && (
+            <div className="space-y-5">
+              <div className="space-y-1.5">
+                <h3 className="font-display font-extrabold text-xl text-[#F5F4F0]">
+                  {CONFIG.planName} · {formatPrice(CONFIG.price)}
+                </h3>
+                <p className="text-sm text-slate-400 font-light">
+                  Một lần duy nhất, truy cập mãi mãi. Điền thông tin để team duyệt và thêm bạn vào cộng đồng.
+                </p>
+              </div>
+
+              <div className="space-y-3.5">
+                <div>
+                  <label className={labelClass} htmlFor="pm-name">Họ và tên *</label>
+                  <input
+                    id="pm-name" ref={nameInputRef} className={inputClass}
+                    value={name} onChange={(e) => setName(e.target.value)}
+                    placeholder="Nguyễn Văn A" autoComplete="name"
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="pm-phone">Số điện thoại (Zalo) *</label>
+                  <input
+                    id="pm-phone" className={inputClass} inputMode="tel"
+                    value={phone} onChange={(e) => setPhone(e.target.value)}
+                    placeholder="09xx xxx xxx" autoComplete="tel"
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="pm-discord">Tên Discord *</label>
+                  <input
+                    id="pm-discord" className={inputClass}
+                    value={discord} onChange={(e) => setDiscord(e.target.value)}
+                    placeholder="vd: nolanj"
+                  />
+                  <div className="flex items-start gap-1.5 mt-2 px-1">
+                    <Info className="w-3.5 h-3.5 text-[#C9A961] shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Nhập <strong className="text-slate-400">username</strong> (chữ thường, không dấu cách), không phải tên hiển thị.
+                      Xem tại Discord → Cài đặt → Tài khoản. Team duyệt yêu cầu tham gia server theo đúng tên này.
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="pm-email">Email</label>
+                  <input
+                    id="pm-email" type="email" className={inputClass}
+                    value={email} onChange={(e) => setEmail(e.target.value)}
+                    placeholder="ban@email.com" autoComplete="email"
+                  />
+                </div>
+
+                <div>
+                  <label className={labelClass} htmlFor="pm-fb">Link Facebook cá nhân</label>
+                  <input
+                    id="pm-fb" className={inputClass}
+                    value={facebook} onChange={(e) => setFacebook(e.target.value)}
+                    placeholder="facebook.com/ten-cua-ban"
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="flex items-start gap-2 text-xs text-red-400">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{error}</span>
+                </div>
+              )}
+
+              <button type="button" onClick={goToStep2} className={primaryBtn}>
+                Tiếp tục <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </div>
+          )}
+
+          {/* ====================== BƯỚC 2 ====================== */}
+          {step === 2 && (
+            <div className="space-y-5">
+              <div className="space-y-1.5">
+                <h3 className="font-display font-extrabold text-xl text-[#F5F4F0]">
+                  Chuyển {formatPrice(CONFIG.price)}
+                </h3>
+                <p className="text-sm text-slate-400 font-light">
+                  {CONFIG.qrImageUrl
+                    ? "Mở app ngân hàng → Quét mã QR, nhập đúng số tiền và nội dung CK bên dưới."
+                    : "Mở app ngân hàng → Quét mã QR (đã có sẵn số tiền và nội dung)."}
+                </p>
+              </div>
+
+              {/* Mã QR */}
+              <div className="bg-white rounded-2xl p-4 flex items-center justify-center">
+                {qrFailed ? (
+                  <div className="text-center py-8 px-4 space-y-2">
+                    <AlertCircle className="w-7 h-7 text-amber-500 mx-auto" />
+                    <p className="text-xs text-slate-600 leading-relaxed max-w-[220px]">
+                      Không tải được mã QR. Vui lòng chuyển khoản thủ công theo thông tin bên dưới.
+                    </p>
+                  </div>
+                ) : (
+                  <img
+                    src={buildQrUrl(transferContent)}
+                    alt="Mã QR chuyển khoản"
+                    onError={() => setQrFailed(true)}
+                    className="w-full max-w-[240px] h-auto"
+                    style={{ imageRendering: CONFIG.qrImageUrl ? "pixelated" : "auto" }}
+                  />
+                )}
+              </div>
+
+              {/* Thông tin tài khoản */}
+              <div className="space-y-2.5">
+                <InfoRow label="Ngân hàng" value={CONFIG.bankName} />
+                <InfoRow label="Số tài khoản" value={CONFIG.accountNo} mono copyable />
+                <InfoRow label="Chủ tài khoản" value={CONFIG.accountName} />
+                <InfoRow label="Nội dung CK" value={transferContent} mono highlight copyable />
+              </div>
+
+              <p className="text-[11px] text-slate-500 leading-relaxed px-1">
+                Nội dung chuyển khoản gồm số điện thoại và tên Discord bạn vừa nhập. Ghi đúng nội dung này giúp team đối soát nhanh hơn.
+              </p>
+
+              {/* Upload bill */}
+              <div className="space-y-2 pt-2 border-t border-white/10">
+                <label className={labelClass}>Ảnh bill chuyển khoản *</label>
+                <input
+                  ref={fileInputRef} type="file" accept="image/*"
+                  onChange={handlePickFile} className="hidden"
+                />
+                {billPreview ? (
+                  <div className="space-y-2.5">
+                    <img
+                      src={billPreview} alt="Ảnh bill đã chọn"
+                      className="max-h-36 w-auto rounded-xl border border-[#C9A961]/25 mx-auto"
+                    />
+                    <div className="flex items-center justify-between gap-3 text-xs">
+                      <span className="text-slate-400 truncate">{billFile?.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        className="shrink-0 font-bold text-[#C9A961] hover:text-[#A98B45] hover:underline cursor-pointer"
+                      >
+                        Chọn ảnh khác
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-[#C9A961]/40 rounded-2xl py-7 flex flex-col items-center gap-2 hover:border-[#C9A961] hover:bg-[#C9A961]/5 transition-all cursor-pointer"
+                  >
+                    <Upload className="w-6 h-6 text-[#C9A961]" />
+                    <span className="text-xs text-slate-400">
+                      Bấm để chọn ảnh (JPG, PNG)
+                    </span>
+                  </button>
+                )}
+              </div>
+
+              {error && (
+                <div className="flex items-start gap-2 text-xs text-red-400">
+                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                  <span className="leading-relaxed">{error}</span>
+                </div>
+              )}
+
+              <button
+                type="button" onClick={handleSubmit} disabled={submitting}
+                className={primaryBtn}
+              >
+                {submitting ? (
+                  <><Loader2 className="w-4 h-4 animate-spin mr-2" /> Đang gửi…</>
+                ) : (
+                  <>Gửi xác nhận thanh toán <ArrowRight className="w-4 h-4 ml-2" /></>
+                )}
+              </button>
+
+              <button
+                type="button" onClick={() => { setError(""); setStep(1); }}
+                className="inline-flex items-center text-xs text-slate-500 hover:text-slate-300 transition-colors cursor-pointer"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 mr-1" /> Sửa lại thông tin
+              </button>
+            </div>
+          )}
+
+          {/* ====================== BƯỚC 3 — MÀN HÌNH THÀNH CÔNG ====================== */}
+          {step === 3 && (
+            <div className="space-y-5">
+              {/* Lời xác nhận & giải thích quy trình */}
+              <div className="text-center space-y-3">
+                <div className="w-14 h-14 rounded-full bg-[#C9A961]/15 border border-[#C9A961]/40 flex items-center justify-center mx-auto shadow-lg shadow-[#C9A961]/10">
+                  <CircleCheck className="w-7 h-7 text-[#C9A961]" />
+                </div>
+                <h3 className="font-display font-extrabold text-xl text-[#F5F4F0] tracking-tight">
+                  Đã nhận thông tin &amp; thanh toán!
+                </h3>
+                <div className="bg-white/[0.04] border border-white/10 rounded-2xl p-4 text-left space-y-2">
+                  <p className="text-xs text-slate-300 leading-relaxed">
+                    Cảm ơn bạn <span className="text-[#C9A961] font-semibold">{name.trim()}</span>! Team đang tiến hành đối soát bill thanh toán. Sau khi xác nhận xong, team sẽ duyệt bạn vào nhóm Facebook cộng đồng.
+                  </p>
+                  <p className="text-xs text-slate-400 leading-relaxed">
+                    💡 <strong className="text-slate-300">Việc cần làm tiếp theo:</strong> Hãy bấm nút bên dưới để soạn bài giới thiệu bản thân và tham gia nhóm Facebook. Khi được duyệt vào nhóm, bạn chỉ cần dán bài để chào sân và kết nối cùng mọi người!
+                  </p>
+                </div>
+              </div>
+
+              {/* Nút CTA duy nhất mở phần soạn bài */}
+              {!showComposer ? (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setShowComposer(true)}
+                    className="w-full inline-flex items-center justify-center px-5 py-3.5 rounded-xl text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] text-[#14130F] transition-all cursor-pointer uppercase tracking-wider shadow-lg shadow-[#C9A961]/20 active:scale-[0.98]"
+                  >
+                    <PenLine className="w-4 h-4 mr-2" />
+                    Soạn bài giới thiệu lên Facebook
+                  </button>
+                </div>
+              ) : (
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
+                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
+                    <div>
+                      <p className="text-sm font-bold text-[#F5F4F0] flex items-center gap-1.5">
+                        <PenLine className="w-4 h-4 text-[#C9A961]" />
+                        Soạn bài giới thiệu lên Facebook
+                      </p>
+                      <p className="text-[11px] text-slate-400 mt-0.5">
+                        Chọn các ý bên dưới hoặc chỉnh sửa trực tiếp nội dung bài viết
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowComposer(false);
+                        setOpenDropdown(null);
+                      }}
+                      className="text-xs text-slate-400 hover:text-slate-200 px-2 py-1 rounded transition-colors cursor-pointer"
+                    >
+                      Thu gọn
+                    </button>
+                  </div>
+
+                  {/* Các nhóm dropdown */}
+                  <div className="space-y-3">
+                    {INTRO_OPTIONS.map((g) => {
+                      const selectedValues = introSel[g.key] || [];
+                      const isOpen = openDropdown === g.key;
+
+                      return (
+                        <div key={g.key} className="space-y-1.5 relative">
+                          <label className="text-xs font-semibold text-slate-300 flex items-center justify-between">
+                            <span>
+                              {g.label}
+                              {g.multi && (
+                                <span className="text-[11px] font-normal text-slate-500 ml-1.5">
+                                  (chọn nhiều)
+                                </span>
+                              )}
+                            </span>
+                            {selectedValues.length > 0 && (
+                              <span className="text-[10px] text-[#C9A961] font-medium">
+                                Đã chọn {selectedValues.length}
+                              </span>
+                            )}
+                          </label>
+
+                          <button
+                            type="button"
+                            onClick={() => setOpenDropdown(isOpen ? null : g.key)}
+                            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border text-left text-xs transition-all cursor-pointer ${
+                              isOpen
+                                ? "bg-white/10 border-[#C9A961] ring-1 ring-[#C9A961]/30"
+                                : selectedValues.length > 0
+                                ? "bg-white/5 border-white/20 text-[#F5F4F0]"
+                                : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20"
+                            }`}
+                          >
+                            <span className="truncate pr-2">
+                              {selectedValues.length > 0
+                                ? selectedValues.join(", ")
+                                : g.placeholder}
+                            </span>
+                            <ChevronDown
+                              className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-200 ${
+                                isOpen ? "rotate-180 text-[#C9A961]" : ""
+                              }`}
+                            />
+                          </button>
+
+                          {/* Dropdown menu */}
+                          {isOpen && (
+                            <div className="mt-1.5 w-full bg-[#181714] border border-[#C9A961]/30 rounded-xl shadow-2xl p-1.5 z-20 space-y-1 max-h-56 overflow-y-auto">
+                              {g.items.map((item) => {
+                                const active = selectedValues.includes(item);
+                                return (
+                                  <button
+                                    key={item}
+                                    type="button"
+                                    onClick={() => {
+                                      toggleIntro(g.key, item, g.multi);
+                                      if (!g.multi) setOpenDropdown(null);
+                                    }}
+                                    className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left ${
+                                      active
+                                        ? "bg-[#C9A961]/15 text-[#C9A961] font-semibold"
+                                        : "text-slate-300 hover:bg-white/5 hover:text-white"
+                                    }`}
+                                  >
+                                    <span className="pr-2">{item}</span>
+                                    <div
+                                      className={`w-4 h-4 rounded flex items-center justify-center shrink-0 transition-colors ${
+                                        g.multi
+                                          ? active
+                                            ? "bg-[#C9A961] text-[#14130F]"
+                                            : "border border-white/20 bg-white/5"
+                                          : active
+                                          ? "bg-[#C9A961] text-[#14130F] rounded-full"
+                                          : "border border-white/20 rounded-full"
+                                      }`}
+                                    >
+                                      {active && <Check className="w-3 h-3 stroke-[3]" />}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Ô bài viết */}
+                  <div className="space-y-1.5">
+                    <label
+                      htmlFor="pm-intro"
+                      className="text-xs font-semibold text-slate-300 block"
+                    >
+                      Bài viết của bạn{" "}
+                      <span className="font-normal text-slate-500">(sửa trực tiếp được)</span>
+                    </label>
+                    <textarea
+                      id="pm-intro"
+                      ref={introRef}
+                      rows={8}
+                      value={introText}
+                      onChange={(e) => setIntroText(e.target.value)}
+                      className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-3 text-sm text-[#F5F4F0] leading-relaxed focus:outline-none focus:border-[#C9A961] focus:ring-2 focus:ring-[#C9A961]/25 transition-all resize-none"
+                    />
+                  </div>
+
+                  {/* Nút sao chép và mở Facebook */}
+                  <button
+                    type="button"
+                    onClick={handleCopyAndOpen}
+                    className="w-full inline-flex items-center justify-center px-5 py-3.5 rounded-xl text-sm font-bold bg-[#1877F2] hover:bg-[#166fe5] active:scale-[0.98] text-white transition-all cursor-pointer uppercase tracking-wide shadow-lg shadow-[#1877F2]/20"
+                  >
+                    {copyState === "copied" ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2" />
+                        Đã sao chép, đang mở Facebook
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Sao chép bài &amp; mở nhóm Facebook
+                      </>
+                    )}
+                  </button>
+
+                  {/* Hướng dẫn dán — chỉ hiện sau khi đã bấm */}
+                  {copyState === "copied" && (
+                    <p className="text-[11px] text-slate-400 leading-relaxed text-center">
+                      Trong group, bấm "Bạn viết gì đi…" rồi dán bài (nhấn giữ và chọn Dán, hoặc Ctrl + V).
+                    </p>
+                  )}
+
+                  {/* Nút dự phòng — chỉ hiện khi trình duyệt chặn tab mới */}
+                  {copyState === "blocked" && (
+                    <div className="bg-[#1877F2]/10 border border-[#1877F2]/30 rounded-xl p-3.5 space-y-2.5">
+                      <p className="text-[11px] text-slate-300 leading-relaxed">
+                        Bài viết đã được sao chép, nhưng trình duyệt chặn mở tab mới. Bấm nút dưới đây để vào group rồi dán bài.
+                      </p>
+                      <a
+                        href={CONFIG.facebookGroup}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full inline-flex items-center justify-center px-4 py-2.5 rounded-lg text-xs font-bold bg-[#1877F2] hover:bg-[#145DBF] text-white transition-all cursor-pointer uppercase tracking-wide"
+                      >
+                        <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                        Mở Cộng đồng Facebook
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Hỗ trợ */}
+              <a
+                href={CONFIG.zaloSupport}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block text-center text-xs text-slate-500 hover:text-[#C9A961] transition-colors"
+              >
+                Cần hỗ trợ gấp? Nhắn Zalo
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default PaymentModal;
+
+===== HẾT FILE: src/components/PaymentModal.tsx =====
+
+===== FILE: src/components/Roadmap.tsx =====
+import React from "react";
+import { Users, BookOpen } from "lucide-react";
+import { usePaymentModal } from "./PaymentModal";
+
+export default function Roadmap() {
+  const { openPaymentModal } = usePaymentModal();
+
+  return (
+    <section className="py-14 md:py-24 bg-[#FAF9F6] overflow-hidden border-t border-black/[0.05]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-14">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            MEMBERSHIP BAO GỒM
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            299.000đ Trọn Đời — Bạn Nhận Được Gì?
+          </h2>
+          <div className="w-16 h-[2px] bg-[#C9A961] mx-auto my-1"></div>
+          <p className="text-slate-600 text-sm sm:text-base leading-relaxed">
+            Một lần tham gia, truy cập mãi mãi. Đây là toàn bộ những gì bạn nhận được — không phí ẩn, không gia hạn.
+          </p>
+        </div>
+
+        {/* 3 Columns Grid for Value Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-4xl mx-auto">
+          
+          {/* Card 1: Cộng đồng Facebook Miễn Phí */}
+          <div className="group bg-white rounded-3xl border border-black/5 p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-[#C9A961]/50 hover:bg-[#C9A961]/5 transition-all duration-300 relative overflow-hidden">
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#C9A961]/10 flex items-center justify-center text-[#C9A961] group-hover:bg-[#C9A961] group-hover:text-[#14130F] transition-colors duration-300">
+                <Users className="w-6 h-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-[#A98B45] transition-colors duration-300">
+                  Cộng đồng Facebook Miễn Phí
+                </h3>
+                {/* Default text - 1 line */}
+                <p className="text-slate-500 text-xs sm:text-sm line-clamp-1 group-hover:hidden">
+                  Tham gia cộng đồng người thật đang làm thật mỗi ngày.
+                </p>
+                {/* Hover text - full description */}
+                <p className="hidden group-hover:block text-slate-600 text-xs sm:text-sm leading-relaxed font-light transition-all duration-300 animate-fadeIn">
+                  Cộng đồng Facebook là nơi các thành viên từ mọi xuất phát điểm chia sẻ kinh nghiệm thực chiến, cập nhật thông tin thị trường, và hỗ trợ lẫn nhau. Hoàn toàn miễn phí, không điều kiện.
+                </p>
+              </div>
+            </div>
+            
+            <div className="pt-6">
+              <a 
+                href="https://www.facebook.com/share/g/18nGRfdbLQ/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-[10px] bg-slate-100 group-hover:bg-[#C9A961] text-[#14130F] group-hover:text-[#14130F] shadow-sm transform group-hover:translate-y-0 transition-all duration-300 text-center"
+              >
+                <span>Tham gia cộng đồng Facebook →</span>
+              </a>
+            </div>
+          </div>
+
+          {/* Card 3: Thư Viện Tài Liệu Miễn Phí */}
+          <div className="group bg-white rounded-3xl border border-black/5 p-6 sm:p-8 flex flex-col justify-between shadow-sm hover:shadow-xl hover:-translate-y-1.5 hover:border-[#C9A961]/50 hover:bg-[#C9A961]/5 transition-all duration-300 relative overflow-hidden">
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#C9A961]/10 flex items-center justify-center text-[#C9A961] group-hover:bg-[#C9A961] group-hover:text-[#14130F] transition-colors duration-300">
+                <BookOpen className="w-6 h-6" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 group-hover:text-[#A98B45] transition-colors duration-300">
+                  Thư Viện Tài Liệu Miễn Phí
+                </h3>
+                {/* Default text - 1 line */}
+                <p className="text-slate-500 text-xs sm:text-sm line-clamp-1 group-hover:hidden">
+                  Lộ trình từ con số 0 đến video affiliate đầu tiên.
+                </p>
+                {/* Hover text - full description */}
+                <p className="hidden group-hover:block text-slate-600 text-xs sm:text-sm leading-relaxed font-light transition-all duration-300 animate-fadeIn">
+                  Bộ tài liệu hướng dẫn chi tiết từng bước: cách set up thiết bị và IP chuẩn thị trường Mỹ, cách tạo tài khoản TikTok Shop US, và hướng dẫn thực chiến hai dòng video AI đang thịnh hành nhất. Miễn phí hoàn toàn cho mọi thành viên.
+                </p>
+              </div>
+            </div>
+
+            <div className="pt-6">
+              <button
+                type="button"
+                onClick={openPaymentModal}
+                className="w-full inline-flex items-center justify-center px-4 py-3 text-xs font-bold uppercase tracking-wider rounded-[10px] bg-[#C9A961] hover:bg-[#A98B45] group-hover:bg-[#C9A961] text-[#14130F] group-hover:text-[#14130F] shadow-sm transform group-hover:translate-y-0 transition-all duration-300 text-center cursor-pointer"
+              >
+                <span>Xem tài liệu →</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/Roadmap.tsx =====
+
+===== FILE: src/components/Testimonials.tsx =====
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { Users, ChevronLeft, ChevronRight, X, Maximize2, Play, Video, MessageSquare } from "lucide-react";
+
+// Hoạt động thật của cộng đồng: trích đoạn buổi call + ảnh chụp trao đổi trên Discord.
+// Muốn thêm/bớt: sửa danh sách MEDIA bên dưới (file đặt trong public/activity/).
+type MediaItem = {
+  type: "video" | "image";
+  src: string;
+  thumb?: string;
+  tag: string;
+  title: string;
+  meta?: string;
+};
+
+const MEDIA: MediaItem[] = [
+  {
+    type: "video",
+    src: "https://clinquant-vacherin-a00544.netlify.app/activity/act-01.mp4",
+    thumb: "https://clinquant-vacherin-a00544.netlify.app/activity/act-thumb-01.jpg",
+    tag: "Buổi call cộng đồng",
+    title: "Trích đoạn buổi call cùng coach",
+    meta: "0:30",
+  },
+  {
+    type: "video",
+    src: "https://clinquant-vacherin-a00544.netlify.app/activity/act-02.mp4",
+    thumb: "https://clinquant-vacherin-a00544.netlify.app/activity/act-thumb-02.jpg",
+    tag: "Buổi call cộng đồng",
+    title: "Coach giải đáp trực tiếp cho thành viên",
+    meta: "4:14",
+  },
+  {
+    type: "video",
+    src: "https://clinquant-vacherin-a00544.netlify.app/activity/act-03.mp4",
+    thumb: "https://clinquant-vacherin-a00544.netlify.app/activity/act-thumb-03.jpg",
+    tag: "Buổi call cộng đồng",
+    title: "Chia sẻ kinh nghiệm trong buổi call",
+    meta: "1:59",
+  },
+  {
+    type: "image",
+    src: "https://clinquant-vacherin-a00544.netlify.app/activity/act-img-01.webp",
+    tag: "Discord nội bộ",
+    title: "Trao đổi cách nuôi tài khoản TikTok để tìm sản phẩm",
+  },
+  {
+    type: "image",
+    src: "https://clinquant-vacherin-a00544.netlify.app/activity/act-img-02.webp",
+    tag: "Discord nội bộ",
+    title: "Hỏi đáp concept video chuyên gia cùng admin",
+  },
+  {
+    type: "image",
+    src: "https://clinquant-vacherin-a00544.netlify.app/activity/act-img-03.webp",
+    tag: "Discord nội bộ",
+    title: "Thành viên chia sẻ cách viết prompt làm ảnh AI cho sản phẩm",
+  },
+];
+
+export default function Testimonials() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  const handleFBClick = () => {
+    window.open("https://www.facebook.com/share/g/18nGRfdbLQ/", "_blank", "noopener,noreferrer");
+  };
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const amount = scrollRef.current.clientWidth * 0.8;
+      scrollRef.current.scrollBy({ left: direction === "left" ? -amount : amount, behavior: "smooth" });
+    }
+  };
+
+  const closeLightbox = useCallback(() => setLightboxIndex(null), []);
+  const goNext = useCallback(() => {
+    setLightboxIndex((i) => (i === null ? null : (i + 1) % MEDIA.length));
+  }, []);
+  const goPrev = useCallback(() => {
+    setLightboxIndex((i) => (i === null ? null : (i - 1 + MEDIA.length) % MEDIA.length));
+  }, []);
+
+  // Phím tắt + khoá cuộn nền khi lightbox mở
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+    document.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [lightboxIndex, closeLightbox, goNext, goPrev]);
+
+  const current = lightboxIndex !== null ? MEDIA[lightboxIndex] : null;
+  const videoCount = MEDIA.filter((m) => m.type === "video").length;
+  const imageCount = MEDIA.length - videoCount;
+
+  return (
+    <section className="py-14 md:py-24 bg-[#FAF9F6] border-t border-black/[0.05] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Section Header */}
+        <div className="text-center max-w-3xl mx-auto space-y-4 mb-12">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            Cộng đồng đang hoạt động
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Cộng Đồng Đang Hoạt Động Những Gì?
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base font-light leading-relaxed">
+            Những buổi sinh hoạt cộng đồng phù hợp với người mới học cách làm, cũng phù hợp với những creator cùng nghiên cứu concept mới.
+          </p>
+        </div>
+
+        {/* Carousel */}
+        <div className="relative">
+          <div className="flex justify-end gap-2 mb-4">
+            <button
+              onClick={() => scroll("left")}
+              className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center hover:bg-[#C9A961]/10 hover:border-[#C9A961]/40 transition-all shadow-sm cursor-pointer"
+              aria-label="Xem mục trước"
+            >
+              <ChevronLeft className="w-4 h-4 text-slate-600" />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center hover:bg-[#C9A961]/10 hover:border-[#C9A961]/40 transition-all shadow-sm cursor-pointer"
+              aria-label="Xem mục tiếp"
+            >
+              <ChevronRight className="w-4 h-4 text-slate-600" />
+            </button>
+          </div>
+
+          <div
+            ref={scrollRef}
+            className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {MEDIA.map((item, idx) => {
+              const isVideo = item.type === "video";
+              return (
+                <button
+                  key={idx}
+                  onClick={() => setLightboxIndex(idx)}
+                  className="shrink-0 snap-start w-[290px] sm:w-[420px] group cursor-pointer text-left"
+                  aria-label={`${isVideo ? "Xem video" : "Xem ảnh"}: ${item.title}`}
+                >
+                  <div className="rounded-2xl overflow-hidden bg-white border border-black/[0.07] shadow-sm group-hover:shadow-xl group-hover:border-[#C9A961]/50 transition-all duration-300">
+                    <div className="relative aspect-video overflow-hidden bg-[#14130F]">
+                      <img
+                        src={isVideo ? item.thumb : item.src}
+                        alt={item.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/0 to-black/10 pointer-events-none" />
+
+                      {/* Nhãn loại nội dung */}
+                      <span className="absolute top-3 left-3 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-[#14130F] bg-[#C9A961] px-2.5 py-1 rounded-full shadow">
+                        {isVideo ? <Video className="w-3 h-3" /> : <MessageSquare className="w-3 h-3" />}
+                        {item.tag}
+                      </span>
+
+                      {isVideo ? (
+                        <>
+                          <span className="absolute inset-0 flex items-center justify-center">
+                            <span className="w-14 h-14 rounded-full bg-white/90 group-hover:bg-[#C9A961] flex items-center justify-center shadow-xl transition-colors">
+                              <Play className="w-6 h-6 text-[#14130F] ml-0.5" fill="currentColor" />
+                            </span>
+                          </span>
+                          {item.meta && (
+                            <span className="absolute bottom-3 right-3 text-[11px] font-mono font-bold text-white bg-black/60 px-2 py-0.5 rounded">
+                              {item.meta}
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 text-[11px] font-bold text-[#14130F] bg-white/90 px-2.5 py-1 rounded-full shadow-sm group-hover:bg-[#C9A961] transition-colors">
+                          <Maximize2 className="w-3 h-3" />
+                          Xem rõ
+                        </span>
+                      )}
+                    </div>
+                    <div className="px-4 py-3.5 min-h-[4.25rem]">
+                      <p className="text-sm font-semibold text-slate-800 leading-snug line-clamp-2">{item.title}</p>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-xs text-slate-400 mt-2">
+            {videoCount} video buổi call · {imageCount} ảnh trao đổi trên Discord. Cuộn ngang để xem thêm.
+          </p>
+        </div>
+
+        {/* Khối mời tham gia cộng đồng */}
+        <div className="mt-16 bg-[#14130F] border border-[#C9A961]/25 rounded-[2rem] p-8 md:p-12 text-[#FAF9F6] shadow-xl flex flex-col items-center justify-center gap-8 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#C9A961] opacity-[0.06] blur-[100px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#C9A961] opacity-[0.03] blur-[80px] pointer-events-none" />
+
+          <div className="space-y-3 text-center max-w-3xl mx-auto z-10">
+            <h3 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight text-white">
+              Bạn Muốn Tham Gia Và Trở Thành Một Creator Chuyên Nghiệp?
+            </h3>
+            <p className="text-[#FAF9F6]/75 text-xs sm:text-sm leading-relaxed font-light">
+              Những trao đổi phía trên diễn ra thường xuyên trong cộng đồng. Trở thành thành viên Membership để cùng tham gia những buổi call tiếp theo.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Lightbox toàn màn hình */}
+      {current && lightboxIndex !== null && (
+        <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center p-4 sm:p-8 bg-black/90 backdrop-blur-sm"
+          onClick={closeLightbox}
+        >
+          <button
+            onClick={closeLightbox}
+            className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 rounded-full bg-white/10 border border-[#C9A961]/30 flex items-center justify-center text-slate-300 hover:text-[#C9A961] hover:border-[#C9A961]/60 transition-all cursor-pointer z-20"
+            aria-label="Đóng"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); goPrev(); }}
+            className="absolute left-2 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 border border-[#C9A961]/30 flex items-center justify-center text-slate-300 hover:text-[#C9A961] hover:border-[#C9A961]/60 transition-all cursor-pointer z-20"
+            aria-label="Mục trước"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+
+          <button
+            onClick={(e) => { e.stopPropagation(); goNext(); }}
+            className="absolute right-2 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10 border border-[#C9A961]/30 flex items-center justify-center text-slate-300 hover:text-[#C9A961] hover:border-[#C9A961]/60 transition-all cursor-pointer z-20"
+            aria-label="Mục tiếp"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+
+          <div
+            className="w-full max-w-[1000px] max-h-full overflow-y-auto flex flex-col items-center gap-3 px-10 sm:px-14"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {current.type === "video" ? (
+              <video
+                key={current.src}
+                src={current.src}
+                poster={current.thumb}
+                controls
+                autoPlay
+                playsInline
+                className="w-full max-h-[75vh] rounded-xl shadow-2xl bg-black"
+              />
+            ) : (
+              <img
+                src={current.src}
+                alt={current.title}
+                className="w-full h-auto rounded-xl shadow-2xl"
+              />
+            )}
+            <p className="text-sm text-slate-200 text-center">
+              <span className="text-[#C9A961] font-semibold">{current.tag}</span> · {current.title}
+            </p>
+          </div>
+
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-xs font-mono text-slate-400 bg-black/50 px-3 py-1.5 rounded-full border border-white/10">
+            {lightboxIndex + 1} / {MEDIA.length}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+===== HẾT FILE: src/components/Testimonials.tsx =====
+
+===== FILE: src/components/VideoTestimonials.tsx =====
+import React, { useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
+
+interface VideoItem {
+  id: number;
+  name: string;
+  duration: string;
+  videoUrl: string;
+  thumbUrl: string;
+}
+
+const VIDEO_ITEMS: VideoItem[] = [
+  {
+    id: 1,
+    name: "Thành viên",
+    duration: "Tham gia 3 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-01.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-01.jpg",
+  },
+  {
+    id: 2,
+    name: "Thành viên",
+    duration: "Tham gia 1 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-02.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-02.jpg",
+  },
+  {
+    id: 3,
+    name: "Thành viên",
+    duration: "Tham gia 2 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-03.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-03.jpg",
+  },
+  {
+    id: 4,
+    name: "Thành viên",
+    duration: "Tham gia 4 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-04.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-04.jpg",
+  },
+  {
+    id: 5,
+    name: "Thành viên",
+    duration: "Tham gia 1 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-05.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-05.jpg",
+  },
+  {
+    id: 6,
+    name: "Thành viên",
+    duration: "Tham gia 2 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-06.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-06.jpg",
+  },
+  {
+    id: 7,
+    name: "Thành viên",
+    duration: "Tham gia 3 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-07.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-07.jpg",
+  },
+  {
+    id: 8,
+    name: "Thành viên",
+    duration: "Tham gia 2 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-08.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-08.jpg",
+  },
+  {
+    id: 9,
+    name: "Thành viên",
+    duration: "Tham gia 4 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-09.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-09.jpg",
+  },
+  {
+    id: 10,
+    name: "Thành viên",
+    duration: "Tham gia 1 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-10.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-10.jpg",
+  },
+  {
+    id: 11,
+    name: "Thành viên",
+    duration: "Tham gia 3 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-11.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-11.jpg",
+  },
+  {
+    id: 12,
+    name: "Thành viên",
+    duration: "Tham gia 2 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-12.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-12.jpg",
+  },
+  {
+    id: 13,
+    name: "Thành viên",
+    duration: "Tham gia 1 tháng",
+    videoUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/video-13.mp4",
+    thumbUrl: "https://clinquant-vacherin-a00544.netlify.app/videos/thumb-13.jpg",
+  },
+];
+
+export default function VideoTestimonials() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const videoRefs = useRef<Record<number, HTMLVideoElement | null>>({});
+  const [playingId, setPlayingId] = useState<number | null>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: direction === "left" ? -280 : 280, behavior: "smooth" });
+    }
+  };
+
+  const handlePlayClick = (id: number) => {
+    Object.entries(videoRefs.current).forEach(([key, video]) => {
+      if (Number(key) !== id && video && !video.paused) {
+        video.pause();
+      }
+    });
+
+    const target = videoRefs.current[id];
+    if (target) {
+      target.play();
+      setPlayingId(id);
+    }
+  };
+
+  return (
+    <section className="py-14 md:py-24 bg-[#FAF9F6] overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* Header */}
+        <div className="text-center max-w-2xl mx-auto space-y-4 mb-12">
+          <span className="text-[10px] font-bold tracking-widest text-[#C9A961] bg-[#C9A961]/10 border border-[#C9A961]/30 px-4 py-2 rounded-lg inline-block uppercase">
+            Cộng Đồng Đang Làm Gì
+          </span>
+          <h2 className="font-display font-extrabold text-3xl sm:text-4xl text-slate-900 tracking-tight">
+            Video Từ Những Thành Viên Membership Đã Làm Khi Tham Gia Cộng Đồng
+          </h2>
+          <p className="text-slate-600 text-sm sm:text-base">
+            Những video do chính thành viên Membership AG1 tự làm trong quá trình tham gia cộng đồng, nhiều bạn bắt đầu từ con số 0.
+          </p>
+        </div>
+
+        {/* Scroll Controls */}
+        <div className="flex justify-end gap-2 mb-4 px-1">
+          <button
+            onClick={() => scroll("left")}
+            className="w-9 h-9 rounded-full bg-white border border-black/10 flex items-center justify-center hover:bg-[#C9A961]/10 hover:border-[#C9A961]/40 transition-all shadow-sm cursor-pointer"
+            aria-label="Scroll left"
+          >
+            <ChevronLeft className="w-4 h-4 text-slate-600" />
+          </button>
+          <button
+            onClick={() => scroll("right")}
+            className="w-9 h-9 rounded-full bg-white border border-black/10 flex items-center justify-center hover:bg-[#C9A961]/10 hover:border-[#C9A961]/40 transition-all shadow-sm cursor-pointer"
+            aria-label="Scroll right"
+          >
+            <ChevronRight className="w-4 h-4 text-slate-600" />
+          </button>
+        </div>
+
+        {/* Horizontal Scroll Container */}
+        <div
+          ref={scrollRef}
+          className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {VIDEO_ITEMS.map((item) => {
+            const isPlaying = playingId === item.id;
+            return (
+              <div
+                key={item.id}
+                className="shrink-0 snap-start w-[200px] sm:w-[220px] group"
+              >
+                {/* TikTok-style 9:16 frame */}
+                <div className="relative aspect-[9/16] bg-[#14130F] rounded-2xl overflow-hidden border border-[#C9A961]/20 shadow-md group-hover:shadow-xl group-hover:border-[#C9A961]/50 transition-all duration-300">
+                  <video
+                    ref={(el) => {
+                      videoRefs.current[item.id] = el;
+                    }}
+                    src={item.videoUrl}
+                    poster={item.thumbUrl}
+                    playsInline
+                    preload="none"
+                    controls={isPlaying}
+                    onPlay={() => {
+                      Object.entries(videoRefs.current).forEach(([key, v]) => {
+                        if (Number(key) !== item.id && v && !v.paused) {
+                          v.pause();
+                        }
+                      });
+                      setPlayingId(item.id);
+                    }}
+                    onPause={() => {
+                      if (playingId === item.id) {
+                        setPlayingId(null);
+                      }
+                    }}
+                    onEnded={() => {
+                      if (playingId === item.id) {
+                        setPlayingId(null);
+                      }
+                    }}
+                    className="w-full h-full object-cover absolute inset-0"
+                  />
+
+                  {!isPlaying && (
+                    <button
+                      type="button"
+                      onClick={() => handlePlayClick(item.id)}
+                      aria-label={`Phát video ${item.id}`}
+                      className="absolute inset-0 z-20 flex items-center justify-center bg-black/15 group-hover:bg-black/25 transition-colors cursor-pointer"
+                    >
+                      <span className="w-12 h-12 rounded-full bg-[#14130F]/80 border border-[#C9A961]/60 flex items-center justify-center text-[#C9A961] shadow-lg group-hover:scale-110 group-hover:bg-[#C9A961] group-hover:text-[#14130F] transition-all">
+                        <Play className="w-5 h-5 fill-current ml-0.5" />
+                      </span>
+                    </button>
+                  )}
+
+                  {/* Bottom Info Overlay: Member label + Community duration */}
+                  {!isPlaying && (
+                    <div className="absolute bottom-0 left-0 right-0 z-10 p-3.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent pointer-events-none">
+                      <p className="text-white font-bold text-xs">{item.name}</p>
+                      <p className="text-[#C9A961] text-[10px] font-mono mt-0.5">{item.duration}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* CTA */}
+        <div className="text-center mt-8">
+          <a
+            href="https://www.facebook.com/share/g/18nGRfdbLQ/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center text-xs font-bold text-[#C9A961] hover:text-[#A98B45] hover:underline tracking-wider uppercase transition-colors"
+          >
+            Xem thêm trong cộng đồng →
+          </a>
+        </div>
+
+      </div>
+    </section>
+  );
+}
+
+
+===== HẾT FILE: src/components/VideoTestimonials.tsx =====
+
+===== FILE: src/components/WaitlistModal.tsx =====
+import React, { useState } from "react";
+import { X, ArrowRight, Loader2, Check, MessageCircle } from "lucide-react";
+import { addToWaitlist } from "../waitlistSheet";
+
+const ZALO_LINK = "https://zalo.me/0812338344";
+
+interface Props {
+  open: boolean;
+  onClose: () => void;
+  onSubmitted?: () => void;
+}
+
+const inputClass =
+  "w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-[#F5F4F0] placeholder:text-slate-600 focus:outline-none focus:border-[#C9A961]/60 focus:ring-2 focus:ring-[#C9A961]/15 transition-all";
+
+export default function WaitlistModal({ open, onClose, onSubmitted }: Props) {
+  const [name, setName] = useState("");
+  const [zalo, setZalo] = useState("");
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<{ position: number; duplicate: boolean } | null>(null);
+
+  if (!open) return null;
+
+  const resetAndClose = () => {
+    if (submitting) return;
+    setName(""); setZalo(""); setError(""); setResult(null);
+    onClose();
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    const cleanName = name.trim().replace(/\s+/g, " ");
+    const digits = zalo.replace(/\D/g, "");
+    if (!cleanName) { setError("Vui lòng nhập họ và tên."); return; }
+    if (digits.length < 9 || digits.length > 12) { setError("Số Zalo chưa hợp lệ. Vui lòng kiểm tra lại."); return; }
+
+    setSubmitting(true);
+    try {
+      const r = await addToWaitlist(cleanName, digits);
+      setResult(r);
+      onSubmitted?.();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "";
+      // Mã lỗi giúp admin biết nguyên nhân; khách chỉ cần thử lại hoặc nhắn Zalo
+      const code =
+        err instanceof TypeError ? "KHÔNG KẾT NỐI ĐƯỢC MÁY CHỦ"
+        : /Thiếu thông tin bắt buộc/.test(msg) ? "APPS SCRIPT CHƯA CẬP NHẬT CODE HÀNG CHỜ"
+        : /permission|quyền|Exception/i.test(msg) ? "APPS SCRIPT CHƯA CÓ QUYỀN SỬA SHEET HÀNG CHỜ"
+        : msg || "KHÔNG RÕ";
+      setError(`Chưa gửi được đăng ký. Vui lòng thử lại sau ít phút hoặc nhắn Zalo để được hỗ trợ. (Mã lỗi: ${code})`);
+    }
+    setSubmitting(false);
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-[10000] flex items-end sm:items-center justify-center sm:p-4 bg-black/70 backdrop-blur-sm"
+      onClick={resetAndClose}
+    >
+      <div
+        className="relative w-full sm:max-w-md bg-[#14130F] border border-[#C9A961]/30 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={resetAndClose}
+          className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/5 border border-[#C9A961]/20 flex items-center justify-center text-slate-400 hover:text-[#C9A961] hover:border-[#C9A961]/50 transition-all cursor-pointer z-10"
+          aria-label="Đóng"
+        >
+          <X className="w-4 h-4" />
+        </button>
+
+        {result ? (
+          <div className="p-7 sm:p-9 text-center space-y-6">
+            <div className="w-16 h-16 rounded-full bg-[#C9A961]/15 border border-[#C9A961]/40 flex items-center justify-center mx-auto">
+              <Check className="w-8 h-8 text-[#C9A961]" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="font-display font-extrabold text-2xl text-[#F5F4F0]">
+                {result.duplicate ? "Bạn đã có trong hàng chờ" : "Bạn đã vào hàng chờ"}
+              </h3>
+              {result.position > 0 && (
+                <>
+                  <p className="text-slate-400 text-sm">Vị trí của bạn trong danh sách</p>
+                  <div className="font-display font-extrabold text-5xl text-[#C9A961] py-2">#{result.position}</div>
+                </>
+              )}
+            </div>
+            <div className="bg-white/5 border border-[#C9A961]/20 rounded-2xl p-5 text-left">
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Khi slot coaching mở lại, Hiếu sẽ liên hệ với bạn qua Zalo theo thứ tự trong hàng chờ. Hãy để ý tin nhắn Zalo của bạn nhé.
+              </p>
+            </div>
+            <a
+              href={ZALO_LINK}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full inline-flex items-center justify-center px-6 py-3.5 rounded-xl text-sm font-bold bg-white/5 border border-[#C9A961]/30 text-[#C9A961] hover:bg-[#C9A961]/10 transition-all cursor-pointer"
+            >
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Mở Zalo của Hiếu
+            </a>
+            <button onClick={resetAndClose} className="text-xs text-slate-500 hover:text-slate-300 transition-colors cursor-pointer">
+              Đóng cửa sổ này
+            </button>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="p-7 sm:p-9 space-y-5">
+            <div className="space-y-1.5 pr-10">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#C9A961]">Đăng ký hàng chờ Coaching</span>
+              <h3 className="font-display font-extrabold text-xl text-[#F5F4F0]">Điền tên để giữ chỗ</h3>
+              <p className="text-sm text-slate-400 font-light">
+                Tên của bạn sẽ hiện trong danh sách hàng chờ. Số Zalo chỉ dùng để Hiếu liên hệ, không hiển thị công khai.
+              </p>
+            </div>
+
+            <div className="space-y-1.5">
+              <label htmlFor="wl-name" className="text-xs font-semibold text-slate-300">Họ và tên *</label>
+              <input id="wl-name" className={inputClass} value={name} onChange={(e) => setName(e.target.value)}
+                placeholder="Nguyễn Văn A" autoComplete="name" maxLength={80} />
+            </div>
+            <div className="space-y-1.5">
+              <label htmlFor="wl-zalo" className="text-xs font-semibold text-slate-300">Số Zalo *</label>
+              <input id="wl-zalo" className={inputClass} value={zalo} onChange={(e) => setZalo(e.target.value)}
+                placeholder="09xx xxx xxx" inputMode="numeric" autoComplete="tel" />
+            </div>
+
+            {error && <p className="text-xs text-red-400">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full inline-flex items-center justify-center h-12 rounded-xl text-sm font-bold bg-[#C9A961] hover:bg-[#A98B45] disabled:opacity-60 text-[#14130F] uppercase tracking-wider transition-all cursor-pointer"
+            >
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <>Vào hàng chờ <ArrowRight className="w-4 h-4 ml-2" /></>}
+            </button>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+===== HẾT FILE: src/components/WaitlistModal.tsx =====
+
+===== FILE: src/components/ZaloWidget.tsx =====
+import React, { useState, useEffect, useRef } from "react";
+import { MessageCircle } from "lucide-react";
+
+const ZALO_LINK = "https://zalo.me/0327395296";
+const ZALO_NAME = "Nguyễn Anh Tuấn";
+const ZALO_PHONE = "0327395296";
+const LABEL_TEXT = "Nhận tư vấn qua Zalo";
+const MOBILE_BREAKPOINT = 768;
+const AUTO_COLLAPSE_DELAY = 4000;
+
+export default function ZaloWidget() {
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileExpanded, setMobileExpanded] = useState(false);
+  const hasCollapsed = useRef(false);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(e.matches);
+    };
+    handleChange(mq);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile && !hasCollapsed.current) {
+      setMobileExpanded(true);
+      timerRef.current = setTimeout(() => {
+        setMobileExpanded(false);
+        hasCollapsed.current = true;
+      }, AUTO_COLLAPSE_DELAY);
+    }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [isMobile]);
+
+  return (
+    <a
+      href={ZALO_LINK}
+      title={`Zalo ${ZALO_NAME} - ${ZALO_PHONE}`}
+      aria-label={`Nhận tư vấn qua Zalo: ${ZALO_NAME} ${ZALO_PHONE}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      style={{
+        position: "fixed",
+        bottom: isMobile ? "92px" : "24px",
+        right: isMobile ? "16px" : "24px",
+        zIndex: 9999,
+        display: "inline-flex",
+        alignItems: "center",
+        background: "#14130F",
+        border: "1.5px solid rgba(201,169,97,0.4)",
+        borderRadius: "999px",
+        padding: "10px 10px",
+        boxShadow: "0 4px 24px rgba(201,169,97,0.15), 0 2px 8px rgba(0,0,0,0.18)",
+        textDecoration: "none",
+        cursor: "pointer",
+        transition: "transform 0.18s ease, box-shadow 0.18s ease",
+        overflow: "hidden",
+        maxWidth: "320px",
+      }}
+      onMouseEnter={e => {
+        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.05)";
+        (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 6px 32px rgba(201,169,97,0.25), 0 2px 8px rgba(0,0,0,0.22)";
+      }}
+      onMouseLeave={e => {
+        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1)";
+        (e.currentTarget as HTMLAnchorElement).style.boxShadow = "0 4px 24px rgba(201,169,97,0.15), 0 2px 8px rgba(0,0,0,0.18)";
+      }}
+      onMouseDown={e => {
+        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(0.96)";
+      }}
+      onMouseUp={e => {
+        (e.currentTarget as HTMLAnchorElement).style.transform = "scale(1.05)";
+      }}
+    >
+      <span
+        style={{
+          width: "36px",
+          height: "36px",
+          borderRadius: "50%",
+          background: "rgba(201,169,97,0.12)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <MessageCircle
+          style={{ width: "18px", height: "18px", color: "#C9A961" }}
+          strokeWidth={2}
+        />
+      </span>
+
+      {/* Desktop label — always visible, purely static */}
+      <span
+        className="hidden sm:inline"
+        style={{
+          color: "#F5F4F0",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          whiteSpace: "nowrap",
+          marginLeft: "10px",
+          marginRight: "4px",
+          fontFamily: "inherit",
+        }}
+      >
+        <span style={{ display: "block", lineHeight: 1.25 }}>{LABEL_TEXT}</span>
+        <span style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "#C9A961", letterSpacing: "0.02em", lineHeight: 1.3 }}>
+          {ZALO_NAME} · {ZALO_PHONE}
+        </span>
+      </span>
+
+      {/* Mobile label — JS-controlled expand/collapse */}
+      <span
+        className="sm:hidden"
+        style={{
+          color: "#F5F4F0",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          whiteSpace: "nowrap",
+          fontFamily: "inherit",
+          maxWidth: mobileExpanded ? "220px" : "0px",
+          opacity: mobileExpanded ? 1 : 0,
+          marginLeft: mobileExpanded ? "10px" : "0px",
+          marginRight: mobileExpanded ? "4px" : "0px",
+          overflow: "hidden",
+          transition: "max-width 0.4s ease, opacity 0.35s ease, margin 0.4s ease",
+        }}
+      >
+        <span style={{ display: "block", lineHeight: 1.25 }}>{LABEL_TEXT}</span>
+        <span style={{ display: "block", fontSize: "11px", fontWeight: 600, color: "#C9A961", lineHeight: 1.3 }}>
+          {ZALO_NAME} · {ZALO_PHONE}
+        </span>
+      </span>
+    </a>
+  );
+}
+
+===== HẾT FILE: src/components/ZaloWidget.tsx =====
+
+===== FILE: src/data.ts =====
+import { FearVsRealityItem, RoadmapStep, Testimonial, FAQItem } from "./types";
+
+export const FEARS_AND_REALITIES: FearVsRealityItem[] = [
+  {
+    id: "fear-1",
+    fear: "\"Mình đã xem cả trăm video, join 3-4 group — nhưng mỗi nơi dạy một kiểu. Cứ nghiên cứu mãi mà chưa đăng được video nào.\"",
+    myth: "Bạn nghĩ mình cần học thêm, xem thêm — rồi mới bắt đầu. Nhưng vấn đề không phải thiếu thông tin, mà là thừa thông tin rời rạc, mâu thuẫn nhau.",
+    truth: "Ở đây bạn không cần tự lọc thông tin nữa. Tài liệu xây dựng theo lộ trình tuần tự từng bước — từ cấu hình thiết bị đến video AI đầu tiên — đủ đơn giản để ai cũng làm được. Bạn chỉ cần làm theo, từng bước một."
+  },
+  {
+    id: "fear-2",
+    fear: "\"Mình đã thử rồi — nhưng khi gặp lỗi không biết hỏi ai, tự mày mò mãi rồi nản. Dừng lại từ đó đến giờ.\"",
+    myth: "Bạn nghĩ mình không đủ khả năng. Nhưng vấn đề không phải năng lực — mà là không có người đồng hành đúng lúc khi bạn bị kẹt.",
+    truth: "2 buổi call cộng đồng mỗi tuần là nơi bạn đặt câu hỏi và nhận câu trả lời trực tiếp — không phải chờ đợi, không phải tự mò. 1.000+ người đang làm thật mỗi ngày sẽ ở đó khi bạn cần. Không ai bị bỏ lại."
+  },
+  {
+    id: "fear-3",
+    fear: "\"Mình không có thời gian — đang làm văn phòng 8 tiếng, về nhà còn gia đình. Không biết có theo kịp không.\"",
+    myth: "Bạn nghĩ cần nhiều giờ mỗi ngày để xây kênh — quay phim, chỉnh sửa, lên lịch đăng. Nghe không thực tế với lịch trình hiện tại.",
+    truth: "100% video trong mô hình này được sản xuất bằng AI — không cần quay, không cần xuất hiện trước camera, không cần phần mềm phức tạp. 1-2 tiếng buổi tối là đủ để vận hành, không ảnh hưởng công việc chính."
+  }
+];
+
+export const ROADMAP_STEPS: RoadmapStep[] = [
+  {
+    step: 1,
+    title: "Tư Duy Chuẩn & Tìm Định Hướng Ngách Đơn Lớn",
+    badge: "BẮT ĐẦU TUẦN 1",
+    description: "Trước khi cầm điện thoại lên quay, bạn cần hiểu rõ thuật toán phân phối của TikTok và thiết lập tư duy dài hạn của một nhà tiếp thị thực thụ.",
+    details: [
+      "Giải mã chi tiết cấu trúc thuật toán phân phối lưu lượng của TikTok năm 2026",
+      "Ma trận 4 chỉ số kết tinh ra bộ tiêu chí chọn sản phẩm tiềm năng ngách vàng",
+      "Kế hoạch tránh 10 sai sót kinh điển làm kênh bị bóp tương tác hoàn toàn"
+    ]
+  },
+  {
+    step: 2,
+    title: "Dựng Video \"Thôi Miên\" Giữ Chân Người Xem 3 Giây Đầu",
+    badge: "THỰC CHIẾN TUẦN 2",
+    description: "Học cách viết kịch bản cấu trúc thu hút sự chú ý tức thì và các kỹ thuật quay dựng tăng tối đa thời lượng xem trung bình.",
+    details: [
+      "Công thức vàng viết tiêu đề giật gân (Hooking) kích thích sự tò mò",
+      "Hướng dẫn quay phim góc cận cảnh bằng smartphone siêu rõ nét",
+      "Khai phá bí kíp biên tập CapCut nâng cao: phối nhạc, chèn chữ chạy mượt và hiệu ứng âm thanh kích thích mua sắm"
+    ]
+  },
+  {
+    step: 3,
+    title: "Thiết Lập Giỏ Hàng & Tối Ưu SEO Đón Thao Tác Tìm Kiếm",
+    badge: "KÍCH HOẠT DOANH SỐ - TUẦN 3",
+    description: "Bạn sẽ được liên kết giỏ hàng TikTok Shop cá nhân chính thống một cách dễ dàng và học cách làm SEO đưa video lên top tìm kiếm.",
+    details: [
+      "Liên kết tài khoản TikTok Shop chính thức không cần điều kiện 1,000 người theo dõi",
+      "Tối ưu hóa bố cục trưng bày Showcase và kích thích lượt nhấp sản phẩm nhờ ưu đãi",
+      "Ứng dụng bộ từ khóa SEO tự nhiên kéo lưu lượng khách hàng chủ động tìm kiếm"
+    ]
+  },
+  {
+    step: 4,
+    title: "Tiếp Cận Nhãn Hàng & Ký Kết Hợp Đồng Brand Deals",
+    badge: "MỞ RỘNG THU NHẬP - TUẦN 4",
+    description: "Khi kênh của bạn có những tín hiệu tích cực ban đầu, 1% Affiliate Global Agency sẽ đồng hành giúp bạn xúc tiến làm việc trực tiếp với các thương hiệu uy tín.",
+    details: [
+      "Kế hoạch viết email ngỏ lời (Pitching Letter) gửi thẳng cho quản lý nhãn hàng",
+      "Đàm phán tăng mức hoa hồng độc quyền (Exclusive Commission) cao hơn mặt bằng chung",
+      "Nhận hàng trăm mẫu thử sản phẩm (Free Samples) gửi trực tiếp về tận nhà"
+    ]
+  },
+  {
+    step: 5,
+    title: "Xây Dựng Đội Ngũ & Tự Động Hóa Hệ Thống Đa Kênh",
+    badge: "CẤT CÁNH DÀI HẠN - TUẦN 5+",
+    description: "Đưa mô hình của bạn thành doanh nghiệp thu nhỏ. Chuyển mình từ người làm công việc chân tay sang quản trị viên sở hữu chuỗi kênh tạo thụ động.",
+    details: [
+      "Quá trình phân tích số liệu kênh chuyên sâu lọc ra video đột phá đại diện",
+      "Quy trình ủy quyền công việc dựng thô, viết phụ đề cho cộng tác viên chi phí thấp",
+      "Tự sướng vị thế đàm phán hợp đồng đại sứ thương hiệu độc quyền năm dài hạn"
+    ]
+  }
+];
+
+export const TESTIMONIALS: Testimonial[] = [
+  {
+    id: "testimonial-1",
+    name: "Lê Thị Hồng Thắm",
+    role: "Mẹ bỉm sữa 2 con tại Đà Nẵng",
+    tags: ["Kênh @thammebim.review", "+24 Triệu/Tháng", "Từ số 0 Tròn Trĩnh"],
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200",
+    content: "Là mẹ bỉm sữa bận rộn chăm sóc 2 em bé, ban đầu mình cực kỳ áp lực tài chính và thấy bản thân lạc hậu. Nhờ anh Hiếu dắt tay chỉ việc, sửa từng đoạn kịch bản quay cận chiếc nồi cơm điện, hộp đựng gia vị trong bếp, tháng vừa rồi mình thu về hơn 24 triệu hoa hồng sạch. Thật sự thay đổi hoàn toàn cuộc sống của mình!",
+    initialFears: "Quá bận rộn con cái, không rành chút gì về phần mềm chỉnh sửa",
+    growthResult: "Kênh cán mốc 45k lượt theo dõi sau 50 ngày, doanh thu đều đặn."
+  },
+  {
+    id: "testimonial-2",
+    name: "Vũ Minh Quân",
+    role: "Nhân viên văn phòng hành chính",
+    tags: ["Kênh @quan_smartgear", "Thu nhập phụ 18M/tháng", "Dựng video giấu mặt"],
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200",
+    content: "Tính tôi rụt rè, cực sợ đồng nghiệp biết mình làm TikTok nhưng lại muốn nâng cấp thu nhập ngoài lương cứng. Coach Hieu Tran đã bẻ khóa tư duy giúp tôi thiết kế chuỗi video review sản phẩm công nghệ để bàn hoàn toàn giấu mặt, lồng tiếng bình dị bằng tai nghe điện thoại. Giờ tôi có thêm 1 nguồn thu nhập quý giá mà không ai hay biết.",
+    initialFears: "Sợ đồng nghiệp bàn tán, ghét việc xuất hiện lộ mồm miệng trước ống kính",
+    growthResult: "Doanh số đơn hàng tăng trưởng 350% nhờ tối ưu SEO video."
+  },
+  {
+    id: "testimonial-3",
+    name: "Phạm Khánh Linh",
+    role: "Sinh viên năm 3 tại TP. Hồ Chí Minh",
+    tags: ["Kênh @linhlinh_fashion", "+40 Triệu/Tháng", "Liên kết 15 Brand lớn"],
+    avatar: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200",
+    content: "Lúc trước em tự làm TikTok Affiliate kiểu tùy hứng, chật vật cả tháng trời chỉ kiếm được vài trăm nghìn đồng hoa hồng lặt vặt. Vào 1% Affiliate Global Agency, em bắt đầu được tiếp cận nguồn hàng độc quyền có chiết khấu hoa hồng cao hơn 15% kèm kho kịch bản cập nhật trend liên tục. Chặng đường này nếu tự đi một mình chắc chắn em đã bỏ cuộc từ lâu.",
+    initialFears: "Làm lặt vặt không định hướng, không liên hệ được nhãn hàng lớn",
+    growthResult: "Trở thành đối tác ưu tiên của hàng loạt nhãn hàng mỹ phẩm nội địa Trung."
+  }
+];
+
+export const FAQS: FAQItem[] = [
+  {
+    id: "faq-1",
+    category: "Quyền Lợi & Chi Phí",
+    question: "Tham gia cộng đồng Facebook có mất phí không?",
+    answer: "Hoàn toàn miễn phí. Nhóm Facebook của AG1 là nơi các bạn mới trao đổi kinh nghiệm, hỏi đáp và cùng tháo gỡ khó khăn khi bắt đầu làm TikTok Affiliate. Đây là bước khởi đầu phù hợp trước khi bạn quyết định tham gia Membership."
+  },
+  {
+    id: "faq-3",
+    category: "Thời Gian & Thành Quả",
+    question: "Tôi đang làm văn phòng 8 tiếng một ngày, liệu có đủ thời gian theo đuổi?",
+    answer: "Được. Bạn chỉ cần khoảng 1,5 đến 2 tiếng mỗi tối hoặc vài khung giờ trống trong tuần. Kiến thức được chia thành các video ngắn, dễ hiểu, kèm checklist công việc rõ ràng, giúp bạn xây kênh bài bản mà không ảnh hưởng đến công việc chính."
+  },
+  {
+    id: "faq-4",
+    category: "Hợp Tác Nhãn Hàng",
+    question: "Mảng Agency của AG1 hỗ trợ creator như thế nào?",
+    answer: "Khi bạn đã làm được video và được AG1 kết nối với brand, bạn có thể nhận sản phẩm mẫu từ các brand liên kết, được hưởng mức hoa hồng tốt hơn tài khoản thông thường theo thỏa thuận với từng brand, được đội ngũ hỗ trợ khi tài khoản gặp sự cố và được ưu tiên giới thiệu các chiến dịch hợp tác phù hợp."
+  }
+];
+
+===== HẾT FILE: src/data.ts =====
+
+===== FILE: src/firebase.ts =====
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore, doc, getDocFromServer } from "firebase/firestore";
+import firebaseConfig from "../firebase-applet-config.json";
+
+const app = initializeApp(firebaseConfig);
+export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = getAuth(app);
+
+async function testConnection() {
+  try {
+    await getDocFromServer(doc(db, "settings", "coaching"));
+  } catch (error) {
+    if (error instanceof Error && error.message.includes("the client is offline")) {
+      console.error("Please check your Firebase configuration.");
+    }
+  }
+}
+testConnection();
+
+===== HẾT FILE: src/firebase.ts =====
+
+===== FILE: src/index.css =====
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Plus Jakarta Sans", "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Premium Bento Grid theme colors */
+  --color-brand-50: #FAF9F6;
+  --color-brand-100: rgba(201, 169, 97, 0.1);
+  --color-brand-500: #C9A961;
+  --color-brand-600: #A98B45;
+  --color-brand-700: #14130F;
+  --color-accent-gold: #C9A961;
+  --color-brand-dark: #14130F;
+  --color-brand-light: #FAF9F6;
+  --color-brand-muted: #6B6862;
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-[#FAF9F6] text-[#1A1916] antialiased selection:bg-[#C9A961]/20 selection:text-[#14130F];
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out;
+}
+
+
+
+===== HẾT FILE: src/index.css =====
+
+===== FILE: src/main.tsx =====
+import {StrictMode} from 'react';
+import {createRoot} from 'react-dom/client';
+import App from './App.tsx';
+import './index.css';
+
+createRoot(document.getElementById('root')!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+
+===== HẾT FILE: src/main.tsx =====
+
+===== FILE: src/types.ts =====
+export interface Testimonial {
+  id: string;
+  name: string;
+  role: string;
+  tags: string[];
+  avatar: string;
+  content: string;
+  initialFears: string;
+  growthResult: string;
+}
+
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+  category: string;
+}
+
+export interface FearVsRealityItem {
+  id: string;
+  fear: string;
+  myth: string;
+  truth: string;
+}
+
+export interface RoadmapStep {
+  step: number;
+  title: string;
+  description: string;
+  badge: string;
+  details: string[];
+}
+
+===== HẾT FILE: src/types.ts =====
+
+===== FILE: src/waitlistSheet.ts =====
+// Hàng chờ Coaching lưu trên Google Sheet "Danh Sách Chờ Coaching",
+// đọc/ghi qua cùng Apps Script Web App với phần thanh toán.
+export const WAITLIST_API =
+  "https://script.google.com/macros/s/AKfycbxrOh1Fo7u5c75pX6t4eAOtPFGEhxjUToLkvQWAdivXxXOIa2InRqHoalffaVW3PUh0bA/exec";
+
+export interface WaitlistData {
+  count: number;
+  names: string[];
+}
+
+const WAITLIST_SHEET_ID = "1JxiGauAd-2fj7AS7TSOffJDTcKbSjkrMUlGGcNSt8UY";
+
+/** Cách 2 (dự phòng): qua Apps Script (chỉ trả tên). */
+async function fromScript(): Promise<WaitlistData> {
+  const res = await fetch(`${WAITLIST_API}?action=waitlist&t=${Date.now()}`);
+  const json = await res.json();
+  if (!json || !json.ok || !Array.isArray(json.names)) throw new Error(json?.error || "Script chưa trả danh sách");
+  return { count: json.names.length, names: json.names };
+}
+
+/** Cách 1 (chính): đọc thẳng cột B của sheet bằng JSONP (không bị chặn CORS).
+ *  Sheet cần để "Bất kỳ ai có đường liên kết đều xem được". */
+function fromSheet(): Promise<WaitlistData> {
+  return new Promise((resolve, reject) => {
+    const cb = `__ag1Waitlist${Date.now()}${Math.floor(Math.random() * 1000)}`;
+    const script = document.createElement("script");
+    const cleanup = () => {
+      try { delete (window as any)[cb]; } catch { (window as any)[cb] = undefined; }
+      script.remove();
+      clearTimeout(timer);
+    };
+    const timer = setTimeout(() => { cleanup(); reject(new Error("Hết thời gian đọc sheet")); }, 10000);
+    (window as any)[cb] = (resp: any) => {
+      cleanup();
+      if (!resp || resp.status === "error" || !resp.table) { reject(new Error("Sheet trả lỗi")); return; }
+      const names: string[] = (resp.table.rows || [])
+        .map((r: any) => String(r?.c?.[0]?.v ?? "").trim())
+        .filter(Boolean);
+      resolve({ count: names.length, names });
+    };
+    script.onerror = () => { cleanup(); reject(new Error("Không đọc được sheet")); };
+    script.src =
+      `https://docs.google.com/spreadsheets/d/${WAITLIST_SHEET_ID}/gviz/tq` +
+      `?tqx=out:json;responseHandler:${cb}&range=B2:B1000&headers=0&t=${Date.now()}`;
+    document.head.appendChild(script);
+  });
+}
+
+/** Lấy danh sách tên đang chờ: đọc thẳng sheet trước, lỗi thì hỏi Apps Script. */
+export async function fetchWaitlist(): Promise<WaitlistData> {
+  try {
+    return await fromSheet();
+  } catch {
+    return await fromScript();
+  }
+}
+
+/** Ghi một người vào hàng chờ. Trả về vị trí trong danh sách. */
+export async function addToWaitlist(name: string, zalo: string): Promise<{ position: number; duplicate: boolean }> {
+  const res = await fetch(WAITLIST_API, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action: "waitlist", name, zalo }),
+  });
+  const json = await res.json();
+  if (!json || !json.ok) throw new Error(json?.error || "Không gửi được đăng ký");
+  return { position: Number(json.position) || 0, duplicate: !!json.duplicate };
+}
+
+===== HẾT FILE: src/waitlistSheet.ts =====
+
+===== FILE: src/waitlistTypes.ts =====
+export interface WaitlistEntry {
+  id: string;
+  name: string;
+  zalo: string;
+  hoursPerDay: string;
+  journey: string;
+  whyBestFit: string;
+  budget: string;
+  startMonth: string;
+  createdAt: number;
+}
+
+export interface CoachingSettings {
+  slotsFilled: number;
+  slotsTotal: number;
+}
+
+export const HOURS_OPTIONS = [
+  "Dưới 1 giờ mỗi ngày",
+  "1 – 2 giờ mỗi ngày",
+  "2 – 4 giờ mỗi ngày",
+  "Trên 4 giờ mỗi ngày",
+];
+
+export const BUDGET_OPTIONS = [
+  "Dưới 10 triệu",
+  "10 – 20 triệu",
+  "20 – 50 triệu",
+  "Trên 50 triệu",
+];
+
+/** Che số điện thoại, chỉ để lộ 4 số cuối. VD: 0812338344 -> ******8344 */
+export function maskPhone(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length <= 4) return digits;
+  return "*".repeat(digits.length - 4) + digits.slice(-4);
+}
+
+/** Chuẩn hoá số điện thoại để so sánh trùng */
+export function normalizePhone(phone: string): string {
+  return phone.replace(/\D/g, "");
+}
+
+/** "2026-11" -> "Tháng 11/2026" */
+export function formatStartMonth(value: string): string {
+  if (!value || !value.includes("-")) return value;
+  const [year, month] = value.split("-");
+  return `Tháng ${parseInt(month, 10)}/${year}`;
+}
+
+===== HẾT FILE: src/waitlistTypes.ts =====
+
+===== FILE: tsconfig.json =====
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "experimentalDecorators": true,
+    "useDefineForClassFields": false,
+    "module": "ESNext",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowJs": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "allowImportingTsExtensions": true,
+    "noEmit": true
+  }
+}
+
+===== HẾT FILE: tsconfig.json =====
+
+===== FILE: vite.config.ts =====
+import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+import {defineConfig} from 'vite';
+
+export default defineConfig(() => {
+  return {
+    appType: 'spa',
+    plugins: [react(), tailwindcss()],
+    resolve: {
+      alias: {
+        '@': path.resolve(__dirname, '.'),
+      },
+    },
+    server: {
+      // HMR is disabled in AI Studio via DISABLE_HMR env var.
+      // Do not modify: file watching is disabled to prevent flickering during agent edits.
+      hmr: process.env.DISABLE_HMR !== 'true',
+      // Disable file watching when DISABLE_HMR is true to save CPU during agent edits.
+      watch: process.env.DISABLE_HMR === 'true' ? null : {},
+    },
+  };
+});
+
+===== HẾT FILE: vite.config.ts =====
